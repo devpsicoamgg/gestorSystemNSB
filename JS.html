@@ -1,0 +1,1318 @@
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<script> 
+
+
+window.addEventListener("load", buscarDatos)
+
+
+
+function validarFormulario() {
+  loadingOnOff();
+  const form = document.getElementById('crearUsuario');
+  const id = form.usuarioId.value;
+  const nameUnoBene = form.primNomBene.value;
+  const apeUnoBene = form.primApeBene.value;
+  const typDocBene = form.tipoDocBene.value;
+  const numDocBene = form.numDocBene.value;
+  const stateUser = form.stateUser.value;
+  const fechIngre = form.fechIngre.value;
+  const fechNacBene = form.fechNacBene.value;
+  const dptoNaciBene = form.dptoNaciBene.value;
+  const muniNaciBene = form.muniNaciBene.value;
+  const sexBene = form.sexBene.value;
+  const metsSoc = form.metsSoc.value;
+  const primNomAcu = form.primNomAcu.value;
+  const primApeAcu = form.primApeAcu.value;
+  const tipoDocAcu = form.tipoDocAcu.value;
+  const numDocAcu = form.numDocAcu.value;
+  const sexAcu = form.sexAcu.value;
+  const fechNacAcu = form.fechNacAcu.value;
+  const dptoNaciAcu = form.dptoNaciAcu.value;
+  const muniNaciAcu = form.muniNaciAcu.value;
+  const telAcu = form.telAcu.value;
+  const dirResi = form.dirResi.value;
+  const unidadDeServicio = form.unidadDeServicio.value;
+  const grupoDeUds = form.grupoDeUds.value;
+  const codeUDS = form.codeUDS.value;
+  const fechEgres = form.fechEgres.value;
+  const motivoEgre = form.motivoEgre.value;
+  const kindUser = form.kindUser.value;
+  const recoEtnico = form.recoEtnico.value;
+  const tieneDiscapacidad = form.tieneDiscapacidad.value;
+
+  const camposObligatorios = {
+    'unidadDeServicio': '🚨Unidad de Servicio',
+    'grupoDeUds': '🚨Grupo de Unidad',
+    'kindUser': '🚨Tipo de Usuario',
+    'primNomBene': '🚨Primer Nombre del Beneficiario',
+    'primApeBene': '🚨Primer Apellido del Beneficiario',
+    'tipoDocBene': '🚨Tipo de Documento del Beneficiario',
+    'numDocBene': '🚨Número de Documento del Beneficiario',
+    'stateUser': '🚨Estado del Usuario (ACTIVO/RETIRADO)',
+    'fechIngre': '🚨Fecha de Ingreso',
+    'fechNacBene': '🚨Fecha de Nacimiento del Beneficiario',
+    'dptoNaciBene': '🚨Departamento de Nacimiento del Beneficiario',
+    'muniNaciBene': '🚨Municipio de Nacimiento del Beneficiario',
+    'sexBene': '🚨Sexo del Beneficiario',
+    'metsSoc': '🚨Metas Sociales',
+    'primNomAcu': '🚨Primer Nombre del Acudiente',
+    'primApeAcu': '🚨Primer Apellido del Acudiente',
+    'tipoDocAcu': '🚨Tipo de Documento del Acudiente',
+    'numDocAcu': '🚨Número de Documento del Acudiente',
+    'sexAcu': '🚨Sexo del Acudiente',
+    'fechNacAcu': '🚨Fecha de Nacimiento del Acudiente',
+    'dptoNaciAcu': '🚨Departamento de Nacimiento del Acudiente',
+    'muniNaciAcu': '🚨Municipio de Nacimiento del Acudiente',
+    'telAcu': '🚨Teléfono del Acudiente',
+    'dirResi': '🚨Dirección de Residencia',
+    'recoEtnico': '🚨Reconocimiento Étnico',
+    'tieneDiscapacidad': '🚨Condición de Discapacidad',
+  };
+
+  const camposFaltantes = [];
+
+
+  Object.entries(camposObligatorios).forEach(([campo, label]) => {
+    const valorCampo = form[campo].value.trim();
+    if (!valorCampo) {
+      camposFaltantes.push(label);
+    }
+  });
+
+  if (camposFaltantes.length > 0) {
+    const camposFaltantesTexto = camposFaltantes.join(', ');
+
+    window.alert(`⛔⛔⛔⛔⛔ 
+    Por favor 🙏🏼🙏🏼🙏🏼, completa los campos obligatorios: 
+    👉🏽(${camposFaltantesTexto})👈🏽 
+    Antes de poder hacer envío del formulario 😉.
+    _____________
+    ⛔USUARIO NO AGREGADO⛔
+    `);
+     loadingOnOff(); 
+    return;
+  }
+
+const camposFechas = ['fechIngre', 'fechNacBene', 'fechNacAcu'];
+
+  // Obtén la fecha actual
+  const fechaActual = new Date();
+  const hoy = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), fechaActual.getDate());
+
+  // Convierte la fecha de ingreso a objeto Date
+  const fechaIngreso = new Date(fechIngre);
+
+  // Validar todas las fechas
+  for (const campoFecha of camposFechas) {
+    const fechaCampo = new Date(form[campoFecha].value);
+    if (fechaCampo > hoy) {
+      window.alert(`⚠️ La fecha en el campo ${campoFecha} no puede ser posterior a la fecha actual. Por favor, corrige la fecha 🗓️.`);
+       loadingOnOff(); 
+      return;
+    }
+  }
+
+
+if (stateUser === 'RETIRADO' && !fechEgres) {
+    window.alert('⚠️ Debes proporcionar la fecha de egreso si el usuario está retirado 🗓️.');
+    loadingOnOff();
+    return;
+  }
+
+  if (stateUser === 'RETIRADO' && motivoEgre === "") {
+    window.alert('⚠️ Debes proporcionar un motivo de egreso si el usuario está retirado 🤔💭.');
+    loadingOnOff();
+    return;
+  }
+
+  if (fechEgres) {
+    const fechaEgreso = new Date(fechEgres);
+    if (fechaEgreso > hoy) {
+      window.alert('⚠️ La fecha de egreso no puede ser posterior a la fecha actual. Por favor, corrige la fecha 🗓️.');
+      loadingOnOff();
+      return;
+    }
+
+    form.stateUser.value = 'RETIRADO';
+  }
+
+  if (id === "") {
+    // Create ->
+    google.script.run
+      .withSuccessHandler(result => {
+        loadingOnOff();
+        const tableBody = document.getElementById('tableBody-usuarios');
+        tableBody.innerHTML = '';
+        buscarDatos();
+        form.reset();
+        const crearModal = bootstrap.Modal.getOrCreateInstance('#createModal');
+        window.alert('😀El usuario ' + "  " + nameUnoBene + "  " + apeUnoBene + ' con documento ' + typDocBene + " " + numDocBene + ' ha sido creado exitosamente ✔️ 🥳🥳🥳🥳🥳');
+        crearModal.hide();
+      }) 
+      .agregarUsuario(form);
+  } else {
+    // Update
+    google.script.run
+      .withSuccessHandler(result => {
+        loadingOnOff();
+        const tableBody = document.getElementById('tableBody-usuarios');
+        tableBody.innerHTML = '';
+        buscarDatos();
+        form.reset()
+        const crearModal = bootstrap.Modal.getOrCreateInstance('#createModal');
+        window.alert('✍🏽 El beneficiario/a  ' + nameUnoBene + " " + apeUnoBene + ' con documento ' + typDocBene + " " + numDocBene + ' ha sido editado exitosamente! ✔️ 💃🏼🕺🏼💃🏼🕺🏼💃🏼🕺🏼');
+        crearModal.hide()
+      })
+      .editarUsuario(form);
+  }
+}
+
+
+function buscarDatos () {
+  google.script.run
+  .withSuccessHandler(function (dataUsuarios)  {
+let tableBody = document.getElementById("tableBody-usuarios");
+
+var template = document.getElementById("rowTemplate");
+var templateContent = template.content;
+
+ 
+
+dataUsuarios.forEach( usuario =>{
+  const tr = templateContent.cloneNode(true);
+  const usuarioIdCol = tr.querySelector(".template-id"); // 0
+  const stateUserCol = tr.querySelector(".template-estado"); // 1 - 34
+  const fechIngreCol = tr.querySelector(".template-fecha-vinculacion-beneficiario"); // 2 - 32
+  const fechIngreDosCol = tr.querySelector(".template-fecha-ingreso-beneficiario"); // 2 - 26
+  const primNomBeneCol = tr.querySelector(".template-primer-nombre-bene"); //3 - 20
+  const segNomBeneCol = tr.querySelector(".template-segundo-nombre-bene"); //4 - 21
+  const primApeBeneCol = tr.querySelector(".template-primer-apellido-bene"); //5 - 22
+  const segApeBeneCol = tr.querySelector(".template-segundo-apellido-bene"); //6 - 23
+  const tipoDocBeneCol = tr.querySelector(".template-tipo-doc-bene"); //7 - 24
+  const numDocBeneCol = tr.querySelector(".template-numero-doc-bene"); // 8 - 25
+  const fechNacBeneCol = tr.querySelector(".template-fecha-nacimiento-beneficiario"); //9 - 1
+  const dptoNaciBeneCol = tr.querySelector(".template-dpto-nacimiento-benaficiario"); //10 - 2
+  const muniNaciBeneCol = tr.querySelector(".template-mcpio-nacimiento-beneficiario"); //11 -3
+  const sexBeneCol = tr.querySelector(".template-sexo-beneficiario"); //12 - 4
+  const metsSocCol = tr.querySelector(".template-metas-sociales"); //13 - 5
+  const primNomAcuCol = tr.querySelector(".template-prim-name-acu"); //14 - 6
+  const segNomAcuCol = tr.querySelector(".template-seg-name-acu"); //15 - 7
+  const primApeAcuCol = tr.querySelector(".template-prim-ape-acu"); // 16 - 8
+  const segApeAcuCol = tr.querySelector(".template-seg-ape-acu"); // 17 - 9
+  const tipoDocAcuCol = tr.querySelector(".template-tipo-doc-acu"); // 18 - 10 
+  const numDocAcuCol = tr.querySelector(".template-num-doc-acu"); // 19 - 11
+  const sexAcuCol = tr.querySelector(".template-sex-acu"); // 20 - 12
+  const fechNacAcuCol = tr.querySelector(".template-fecha-nac-acu"); //21 - 13
+  const dptoNaciAcuCol = tr.querySelector(".template-dpto-nac-acu"); //22 - 14
+  const muniNaciAcuCol = tr.querySelector(".template-mcpio-naci-acu"); //23 - 15
+  const telAcuCol = tr.querySelector(".template-tel"); //24 - 16 
+  const dirResiCol = tr.querySelector(".template-dir"); //25 - 17 
+  const unidadDeServicioCol = tr.querySelector(".template-uds"); //26 - 27
+  const grupoDeUdsCol = tr.querySelector(".template-grupo"); //27 - 28
+  const fechEgresCol = tr.querySelector(".template-fecha-egreso"); //28 - 18
+  const motivoEgreCol = tr.querySelector(".template-motivo-egreso"); //29 - 19
+  const kindUserCol = tr.querySelector(".template-tipo-beneficiario"); //30 - 33
+  const codeUDSCol = tr.querySelector(".template-codigo-uds");//31 - 36
+  const rhUserCol = tr.querySelector(".template-rh-usuario");//32 - 37
+  const epsUserCol = tr.querySelector(".template-eps-usuario"); //33 - 38
+  const pesoUnoCol = tr.querySelector(".template-peso-uno-usuario"); //34 - 39
+  const pesoDosCol = tr.querySelector(".template-peso-dos-usuario"); //35 - 40
+  const pesoTresCol = tr.querySelector(".template-peso-tres-usuario"); //36 - 41
+  const tallaUnoCol = tr.querySelector(".template-talla-uno-usuario"); //37 - 42
+  const tallaDosCol = tr.querySelector(".template-talla-dos-usuario"); //38 - 43
+  const tallaTresCol = tr.querySelector(".template-talla-tres-usuario"); //39 - 44
+  const correoAcudienteCol = tr.querySelector(".template-mail-acudiete"); //40 - 45
+  const epsAcudienteCol = tr.querySelector(".template-eps-acudiente"); //41 - 46
+  const primNomMamaCol = tr.querySelector(".template-primer-nombre-mama"); //42 - 47
+  const segNomMamaCol = tr.querySelector(".template-segundo-nombre-mama"); //43 - 48
+  const primApeMamaCol = tr.querySelector(".template-primer-apellido-mama"); //44 - 49
+  const segApeMamaCol = tr.querySelector(".template-segundo-apellido-mama"); //45 - 50
+  const tipoDocMamaCol = tr.querySelector(".template-tipo-doc-mama"); //46 - 51
+  const numDocMamaCol = tr.querySelector(".template-numero-doc-mama"); //47
+  const sexMamaCol = tr.querySelector(".template-sexo-mama"); //48 - 53
+  const fechNacMamaCol = tr.querySelector(".template-fecha-nacimiento-mama"); //49 - 54
+  const dptoNaciMamaCol = tr.querySelector(".template-dpto-nacimiento-mama"); //50 - 55
+  const muniNaciMamaCol = tr.querySelector(".template-municipio-nacimiento-mama"); //51 - 56
+  const epsMamaCol = tr.querySelector(".template-eps-mama"); //52 - 57
+  const correoMamaCol = tr.querySelector(".template-correo-mama"); //53 - 58
+  const telefonoMamaCol = tr.querySelector(".template-telefono-mama"); //54 - 59
+  const primNomPapaCol = tr.querySelector(".template-primer-nombre-papa"); //55 - 60
+  const segNomPapaCol = tr.querySelector(".template-segundo-nombre-papa"); //56 - 61
+  const primApePapaCol = tr.querySelector(".template-primer-apellido-papa"); //57 - 62
+  const segApePapaCol = tr.querySelector(".template-segundo-apellido-papa"); //58 - 63
+  const tipoDocPapaCol = tr.querySelector(".template-tipo-doc-papa"); //59 - 64
+  const numDocPapaCol = tr.querySelector(".template-num-doc-papa"); //60 - 65
+  const sexPapaCol = tr.querySelector(".template-sexo-papa"); //61 - 66
+  const fechNacPapaCol = tr.querySelector(".template-fecha-nacimiento-papa"); //62 - 67
+  const dptoNaciPapaCol = tr.querySelector(".template-dpto-naci-papa"); //63 - 68
+  const muniNaciPapaCol = tr.querySelector(".template-municipio-nacimiento-papa"); //64 - 69
+  const epsPapaCol = tr.querySelector(".template-eps-papa"); //65 - 70
+  const correoPapaCol = tr.querySelector(".template-correo-papa"); //66 - 71
+  const telefonoPapaCol = tr.querySelector(".template-telefono-papa"); //67 - 72
+  const sistemaSaludBeneCol = tr.querySelector(".template-regimen-beneficiario"); //68 - 73
+  const ptjSisbenCol = tr.querySelector(".template-ptje-sisben"); //69 - 74
+  const fechaPesoUnoCol = tr.querySelector(".template-fecha-peso-uno"); //70 - 75
+  const fechaPesoDosCol = tr.querySelector(".template-fecha-peso-dos"); //71 - 76
+  const fechaPesoTresCol = tr.querySelector(".template-fecha-peso-tres"); //72 - 77
+  const perimetroBraquialCol = tr.querySelector(".template-perimetro-braquial"); //73 - 78 
+  const fechaNovedadPsicosocialCol = tr.querySelector(".template-fecha-novedad-psicosocial"); //74 - 79
+  const novedadPsicoSocialCol = tr.querySelector(".template-novedad-psicosocial"); //75 - 80
+  const accionesPsicosocialesCol = tr.querySelector(".template-acciones-novedad-psicosocial"); //76 - 81
+  const sistemaSaludAcudienteCol = tr.querySelector(".template-regimen-salud-acudiente"); //77 - 82
+  const sistemaSaludMamaCol = tr.querySelector(".template-regimen-salud-mama"); //78 - 83
+  const sistemaSaludPapaCol = tr.querySelector(".template-regimen-salud-papa"); //79 - 84
+  const dirResiMamaCol = tr.querySelector(".template-dir-residencia-mama"); //80 - 85
+  const dirResiPapaCol = tr.querySelector(".template-dir-residencia-papa"); //81 - 86
+  const acuRelacBeneCol = tr.querySelector(".template-relacion-acudiente-beneficiario"); //82 - 87
+  const ocupaMamaCol = tr.querySelector(".template-ocupacion-mama"); //83 - 88
+  const ocupaPapaCol = tr.querySelector(".template-ocupacion-papa"); //84 - 89
+  const relacionAcudienteConBeneficiarioCol = tr.querySelector(".template-beneficiario-relacion-con-responsable"); //85 - 90
+  const paisNacimientoBeneficiarioCol = tr.querySelector(".template-pais-nacimiento-beneficiario"); // 86 -91
+  const paisNacimientoAcuCol  = tr.querySelector(".template-pais-nacimiento-acu"); // 87 - 92
+  const paisNacimientoMamaCol  = tr.querySelector(".template-pais-nacimiento-mama"); // 88 - 93
+  const paisNacimientoPapaCol = tr.querySelector(".template-pais-nacimiento-papa"); // 89 -94
+  const zonaUbicacionResidenciaCol  = tr.querySelector(".template-zona-ubicacion-residencia"); // 90 - 95
+  const nombreDeLaZonaRestoCol  = tr.querySelector(".template-nombre-zona-residencia"); // 91 - 95
+  const nombreBarrioResidenciaCol  = tr.querySelector(".template-nombre-barrio-residencia"); // 92 - 96
+  const sibenDicotomicoCol = tr.querySelector(".template-siben-dicotomico"); // 93 - 97
+  const jefeGrupoFamiliarCol  = tr.querySelector(".template-jefe-grupo-familiar"); // 94 - 98
+  const geoGradosCol = tr.querySelector(".template-grados-georeferenciacion"); // 95 - 99
+  const geoMinutosCol = tr.querySelector(".template-minutos-georeferenciacion"); // 96 - 100
+  const geoSegundosCol = tr.querySelector(".template-segundos-georeferenciacion"); // 97 - 101
+  const carnetVacunasCol = tr.querySelector(".template-carnet-vacunas"); // 98 - 102
+  const numeroVacunasCol = tr.querySelector(".template-numero-vacunas"); // 99 - 103
+  const controlCrecimientoYDlloCol = tr.querySelector(".template-control-crecimiento-desarrollo"); // 100 - 104
+  const numeroControlesCol = tr.querySelector(".template-numero-controles"); // 101 - 105
+  const estadoPrematurezCol = tr.querySelector(".template-estado-prematurez"); // 102 - 106
+  const semanasDeGestacionCol = tr.querySelector(".template-semanas-gestacion"); // 103 - 107
+  const carnetVacunasAlDiaCol = tr.querySelector(".template-carnet-vacunacion-al-dia"); // 104 - 108
+  const fechaVerificacionCarnetVacunasCol = tr.querySelector(".template-fecha-verificacion-carnet-vacunas"); // 104 - 109
+  const siDesnutricionCanalizadoAEntidadSaludCol = tr.querySelector(".template-si-desnutri-canalizado-a-entidad-salud"); // 104 - 109
+  const ftltSiDesnutricionCol = tr.querySelector(".template-ftlc-si-desnutri"); // 104 - 109
+  const hijoMgdeICBFCol = tr.querySelector(".template-hijo-mg-atendida-en-icbf"); // 104 - 109
+  const lactanciaExclusivaCol = tr.querySelector(".template-si-menor-seis-meses-lactancia-exclusiva"); // 104 - 109
+  const siNoLactanciaExclusivaCualCol = tr.querySelector(".template-si-no-lactancia-exclusiva-cual"); // 104 - 109
+  const lactMaternaExcluMesCol = tr.querySelector(".template-lactancia-meses-exclusiva"); // 104 - 109
+  const totalLactMaternaMesCol = tr.querySelector(".template-total-lactancia-meses"); // 104 - 109
+  const geoFechaCol = tr.querySelector(".template-geo-fecha"); // 104 - 109
+  const geoHoraCol = tr.querySelector(".template-geo-hora"); // 104 - 109
+  const recoEtnicoCol = tr.querySelector(".template-reconocimiento-etnico"); // 104 - 109
+  const puebloIndigenaCol = tr.querySelector(".template-pueblo-indigena"); // 104 - 109
+  const resguardoIndigenaCol = tr.querySelector(".template-resguardo-indigena"); // 104 - 109
+  const territorioDptoCol = tr.querySelector(".template-territorio-departamento"); // 104 - 109
+  const territorioMcpioCol = tr.querySelector(".template-territorio-municipio"); // 104 - 109
+  const romGitanoCol = tr.querySelector(".template-rom-gitano"); // 104 - 109
+  const tieneDiscapacidadCol = tr.querySelector(".template-tiene-discapacidad");
+  const entidadDiscapacidadCol = tr.querySelector(".template-entidad-discapacidad");
+  const rlcpcdRegistroCol = tr.querySelector(".template-rlcpcd-registro");
+  const ayudaDeOtraPersonaCol = tr.querySelector(".template-ayuda-otra-persona");
+  const ayudaTecnicaCol = tr.querySelector(".template-ayuda-tecnica");
+  const cuentaConLaAyudaCol = tr.querySelector(".template-cuenta-ayuda");
+  const requiereRehabilitacionCol = tr.querySelector(".template-requiere-rehabilitacion");
+  const recibeTerapiaRehabilitacionCol = tr.querySelector(".template-recibe-terapia-rehabilitacion");
+  const interdiccionSiNoCol = tr.querySelector(".template-interdiccion-si-no");
+  const categoriaDiscapacidadCol = tr.querySelector(".template-categoria-discapacidad");
+  const nivelDificultadDesempenoCol = tr.querySelector(".template-nivel-dificultad-desempeno");
+  const descripcionDiscapacidadCol = tr.querySelector(".template-descripcion-discapacidad");
+  const dxNutriUnoCol = tr.querySelector(".template-diagnostico-nutricional-uno");
+  const dxNutriDosCol = tr.querySelector(".template-diagnostico-nutricional-dos");
+  const dxNutriTresCol = tr.querySelector(".template-diagnostico-nutricional-tres");
+  const criterioFocalizacionCol = tr.querySelector(".template-criterioFocalizacion");
+  const geoGradosDosCol = tr.querySelector(".template-geoGradosDos");
+  const geoMinutosDosCol = tr.querySelector(".template-geoMinutosDos");
+  const geoSegundosDosCol = tr.querySelector(".template-geoSegundosDos");
+  const primNomJefeCol = tr.querySelector(".template-primNomJefe");
+  const segNomJefeCol = tr.querySelector(".template-segNomJefe");
+  const primApeJefeCol = tr.querySelector(".template-primApeJefe");
+  const segApeJefeCol = tr.querySelector(".template-segApeJefe");
+  const tipoDocJefeCol = tr.querySelector(".template-tipoDocJefe");
+  const numDocJefeCol = tr.querySelector(".template-numDocJefe");
+  const fechNacJefeCol = tr.querySelector(".template-fechNacJefe");
+  const paisNacimientoJefeCol = tr.querySelector(".template-paisNacimientoJefe");
+  const dptoNaciJefeCol = tr.querySelector(".template-dptoNaciJefe");
+  const muniNaciJefeCol = tr.querySelector(".template-muniNaciJefe");
+  const sexJefeCol = tr.querySelector(".template-sexJefe");
+  const telefonoJefeCol = tr.querySelector(".template-telefonoJefe");
+  const dirResiJefeCol = tr.querySelector(".template-dirResiJefe");
+  const sistemaSaludJefeCol = tr.querySelector(".template-sistemaSaludJefe");
+  const epsJefeCol = tr.querySelector(".template-epsJefe");
+  const correoJefeCol = tr.querySelector(".template-correoJefe");
+  const ocupaJefeCol = tr.querySelector(".template-ocupaJefe");
+  const acuRelacBeneJefeCol = tr.querySelector(".template-acuRelacBeneJefe");
+
+
+  const editButton = tr.querySelector(".button-edit");
+  const deleteButton = tr.querySelector(".button-delete");
+  // CAMPOS MERGED
+  const nombresCol = tr.querySelector(".template-nombres-beneficiario");
+  const apellidosCol = tr.querySelector(".template-apellidos-beneficiario");
+  const docCol = tr.querySelector(".template-documento-beneficiario");
+  const accionesCol = tr.querySelector(".template-acciones");
+
+        usuarioIdCol.textContent = usuario[0];
+        unidadDeServicioCol.textContent = usuario[26];
+        grupoDeUdsCol.textContent = usuario[27];
+        nombresCol.textContent = usuario[3] +" "+ usuario[4];
+        apellidosCol.textContent = usuario[5]+" "+ usuario[6];
+        docCol.textContent = usuario[7]+" "+ usuario[8];
+        fechIngreCol.textContent = new Date(usuario[2]).toLocaleDateString('es-ES', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+          year: '2-digit',
+          timeZone: 'UTC'
+        }).replace(/(^|\s)[a-z]/g, (match) => match.toUpperCase());
+
+        fechIngreDosCol.textContent = usuario[2];
+        stateUserCol.textContent = usuario[1];
+        deleteButton.dataset.usuarioId = usuario[0];
+        editButton.dataset.usuarioId = usuario[0];
+        primNomBeneCol.textContent = usuario[3];
+        segNomBeneCol.textContent = usuario[4];
+        primApeBeneCol.textContent = usuario[5];
+        segApeBeneCol.textContent = usuario[6];
+        tipoDocBeneCol.textContent = usuario[7];
+        numDocBeneCol.textContent = usuario[8];
+        fechNacBeneCol.textContent = usuario[9];
+        dptoNaciBeneCol.textContent = usuario[10];
+        muniNaciBeneCol.textContent = usuario[11];
+        sexBeneCol.textContent = usuario[12];
+        metsSocCol.textContent = usuario[13];
+        primNomAcuCol.textContent = usuario[14];
+        segNomAcuCol.textContent = usuario[15];
+        primApeAcuCol.textContent = usuario[16];
+        segApeAcuCol.textContent = usuario[17];
+        tipoDocAcuCol.textContent = usuario[18];
+        numDocAcuCol.textContent = usuario[19];
+        sexAcuCol.textContent = usuario[20];
+        fechNacAcuCol.textContent = usuario[21];
+        dptoNaciAcuCol.textContent = usuario[22];
+        muniNaciAcuCol.textContent = usuario[23];
+        telAcuCol.textContent = usuario[24];
+        dirResiCol.textContent = usuario[25];
+        fechEgresCol.textContent = usuario[28];
+        motivoEgreCol.textContent = usuario[29];
+        kindUserCol.textContent = usuario[30];
+        codeUDSCol.textContent = usuario[31];
+        rhUserCol.textContent = usuario[32];
+        epsUserCol.textContent = usuario[33];
+        pesoUnoCol.textContent = usuario[34];
+        pesoDosCol.textContent = usuario[35];
+        pesoTresCol.textContent = usuario[36];
+        tallaUnoCol.textContent = usuario[37];
+        tallaDosCol.textContent = usuario[38];
+        tallaTresCol.textContent = usuario[39];
+        correoAcudienteCol.textContent = usuario[40];
+        epsAcudienteCol.textContent = usuario[41];
+        primNomMamaCol.textContent = usuario[42];
+        segNomMamaCol.textContent = usuario[43];
+        primApeMamaCol.textContent = usuario[44];
+        segApeMamaCol.textContent = usuario[45];
+        tipoDocMamaCol.textContent = usuario[46];
+        numDocMamaCol.textContent = usuario[47];
+        sexMamaCol.textContent = usuario[48];
+        fechNacMamaCol.textContent = usuario[49];
+        dptoNaciMamaCol.textContent = usuario[50];
+        muniNaciMamaCol.textContent = usuario[51];
+        epsMamaCol.textContent = usuario[52];
+        correoMamaCol.textContent = usuario[53];
+        telefonoMamaCol.textContent = usuario[54];
+        primNomPapaCol.textContent = usuario[55];
+        segNomPapaCol.textContent = usuario[56];
+        primApePapaCol.textContent = usuario[57];
+        segApePapaCol.textContent = usuario[58];
+        tipoDocPapaCol.textContent = usuario[59];
+        numDocPapaCol.textContent = usuario[60];
+        sexPapaCol.textContent = usuario[61];
+        fechNacPapaCol.textContent = usuario[62];
+        dptoNaciPapaCol.textContent = usuario[63];
+        muniNaciPapaCol.textContent = usuario[64];
+        epsPapaCol.textContent = usuario[65];
+        correoPapaCol.textContent = usuario[66];
+        telefonoPapaCol.textContent = usuario[67];
+        sistemaSaludBeneCol.textContent = usuario[68];
+        ptjSisbenCol.textContent = usuario[69];
+        fechaPesoUnoCol.textContent = usuario[70];
+        fechaPesoDosCol.textContent = usuario[71];
+        fechaPesoTresCol.textContent = usuario[72];
+        perimetroBraquialCol.textContent = usuario[73];
+        fechaNovedadPsicosocialCol.textContent = usuario[74];
+        novedadPsicoSocialCol.textContent = usuario[75];
+        accionesPsicosocialesCol.textContent = usuario[76];
+        sistemaSaludAcudienteCol.textContent = usuario[77];
+        sistemaSaludMamaCol.textContent = usuario[78];
+        sistemaSaludPapaCol.textContent = usuario[79];
+        dirResiMamaCol.textContent = usuario[80];
+        dirResiPapaCol.textContent = usuario[81];
+        acuRelacBeneCol.textContent = usuario[82];
+        ocupaMamaCol.textContent = usuario[83];
+        ocupaPapaCol.textContent = usuario[84];
+        relacionAcudienteConBeneficiarioCol.textContent = usuario[85];
+        paisNacimientoBeneficiarioCol.textContent = usuario[86]; 
+        paisNacimientoAcuCol.textContent = usuario[87];  
+        paisNacimientoMamaCol.textContent = usuario[88]; 
+        paisNacimientoPapaCol.textContent = usuario[89]; 
+        zonaUbicacionResidenciaCol.textContent = usuario[90];  
+        nombreDeLaZonaRestoCol.textContent = usuario[91]; 
+        nombreBarrioResidenciaCol.textContent = usuario[92]; 
+        sibenDicotomicoCol.textContent = usuario[93]; 
+        jefeGrupoFamiliarCol.textContent = usuario[94]; 
+        geoGradosCol.textContent = usuario[95]; 
+        geoMinutosCol.textContent = usuario[96]; 
+        geoSegundosCol.textContent = usuario[97]; 
+        carnetVacunasCol.textContent = usuario[98]; 
+        numeroVacunasCol.textContent = usuario[99]; 
+        controlCrecimientoYDlloCol.textContent = usuario[100]; 
+        numeroControlesCol.textContent = usuario[101]; 
+        estadoPrematurezCol.textContent = usuario[102]; 
+        semanasDeGestacionCol.textContent = usuario[103];
+        carnetVacunasAlDiaCol.textContent = usuario[104];
+        fechaVerificacionCarnetVacunasCol.textContent = usuario[105];
+        siDesnutricionCanalizadoAEntidadSaludCol.textContent = usuario[106];
+        ftltSiDesnutricionCol.textContent = usuario[107];
+        hijoMgdeICBFCol.textContent = usuario[108];
+        lactanciaExclusivaCol.textContent = usuario[109];
+        siNoLactanciaExclusivaCualCol.textContent = usuario[110];
+        lactMaternaExcluMesCol.textContent = usuario[111];
+        totalLactMaternaMesCol.textContent = usuario[112];
+        geoFechaCol.textContent = usuario[113];
+        geoHoraCol.textContent = usuario[114];
+        recoEtnicoCol.textContent = usuario[115];
+        puebloIndigenaCol.textContent = usuario[116];
+        resguardoIndigenaCol.textContent = usuario[117];
+        territorioDptoCol.textContent = usuario[118];
+        territorioMcpioCol.textContent = usuario[119];
+        romGitanoCol.textContent = usuario[120];
+        tieneDiscapacidadCol.textContent = usuario[121];
+        entidadDiscapacidadCol.textContent = usuario[122];
+        rlcpcdRegistroCol.textContent = usuario[123];
+        ayudaDeOtraPersonaCol.textContent = usuario[124];
+        ayudaTecnicaCol.textContent = usuario[125];
+        cuentaConLaAyudaCol.textContent = usuario[126];
+        requiereRehabilitacionCol.textContent = usuario[127];
+        recibeTerapiaRehabilitacionCol.textContent = usuario[128];
+        interdiccionSiNoCol.textContent = usuario[129];
+        categoriaDiscapacidadCol.textContent = usuario[130];
+        nivelDificultadDesempenoCol.textContent = usuario[131];
+        descripcionDiscapacidadCol.textContent = usuario[132];
+        dxNutriUnoCol.textContent = usuario[133];
+        dxNutriDosCol.textContent = usuario[134];
+        dxNutriTresCol.textContent = usuario[135];
+        criterioFocalizacionCol.textContent = usuario[136];
+        geoGradosDosCol.textContent = usuario[137];
+        geoMinutosDosCol.textContent = usuario[138];
+        geoSegundosDosCol.textContent = usuario[139];
+        primNomJefeCol.textContent = usuario[140];
+        segNomJefeCol.textContent = usuario[141];
+        primApeJefeCol.textContent = usuario[142];
+        segApeJefeCol.textContent = usuario[143];
+        tipoDocJefeCol.textContent = usuario[144];
+        numDocJefeCol.textContent = usuario[145];
+        fechNacJefeCol.textContent = usuario[146];
+        paisNacimientoJefeCol.textContent = usuario[147];
+        dptoNaciJefeCol.textContent = usuario[148];
+        muniNaciJefeCol.textContent = usuario[149];
+        sexJefeCol.textContent = usuario[150];
+        telefonoJefeCol.textContent = usuario[151];
+        dirResiJefeCol.textContent = usuario[152];
+        sistemaSaludJefeCol.textContent = usuario[153];
+        epsJefeCol.textContent = usuario[154];
+        correoJefeCol.textContent = usuario[155];
+        ocupaJefeCol.textContent = usuario[156];
+        acuRelacBeneJefeCol.textContent = usuario[157];
+    tableBody.appendChild(tr);
+
+    }) 
+  })
+  .readUsers();
+}
+
+
+
+function editarUsuarioModal(button) {
+  const tableRow = button.parentNode.parentNode;
+
+console.log(tableRow)
+const id = button.dataset.usuarioId;
+const fechNacBene = tableRow.cells[1].innerHTML; console.log('[1] Fecha de Nacimiento Beneficiario:', fechNacBene);
+const dptoNaciBene = tableRow.cells[2].innerHTML; console.log('[2] Departamento de Nacimiento Beneficiario:', dptoNaciBene);
+const muniNaciBene = tableRow.cells[3].innerHTML; console.log('[3] Municipio de Nacimiento Beneficiario:', muniNaciBene);
+const sexBene = tableRow.cells[4].innerHTML; console.log('[4] Sexo Beneficiario:', sexBene);
+const metsSoc = tableRow.cells[5].innerHTML; console.log('[5] Metas Sociales:', metsSoc);
+const primNomAcu = tableRow.cells[6].innerHTML; console.log('[6] Primer Nombre Acudiente:', primNomAcu);
+const segNomAcu = tableRow.cells[7].innerHTML; console.log('[7] Segundo Nombre Acudiente:', segNomAcu);
+const primApeAcu = tableRow.cells[8].innerHTML; console.log('[8] Primer Apellido Acudiente:', primApeAcu);
+const segApeAcu = tableRow.cells[9].innerHTML; console.log('[9] Segundo Apellido Acudiente:', segApeAcu);
+const tipoDocAcu = tableRow.cells[10].innerHTML; console.log('[10] Tipo de Documento Acudiente:', tipoDocAcu);
+const numDocAcu = tableRow.cells[11].innerHTML; console.log('[11] Número de Documento Acudiente:', numDocAcu);
+const sexAcu = tableRow.cells[12].innerHTML; console.log('[12] Sexo Acudiente:', sexAcu);
+const fechNacAcu = tableRow.cells[13].innerHTML; console.log('[13] Fecha de Nacimiento Acudiente:', fechNacAcu);
+const dptoNaciAcu = tableRow.cells[14].innerHTML; console.log('[14] Departamento de Nacimiento Acudiente:', dptoNaciAcu);
+const muniNaciAcu = tableRow.cells[15].innerHTML; console.log('[15] Municipio de Nacimiento Acudiente:', muniNaciAcu);
+const telAcu = tableRow.cells[16].innerHTML; console.log('[16] Teléfono Acudiente:', telAcu);
+const dirResi = tableRow.cells[17].innerHTML; console.log('[17] Dirección Domicilio:', dirResi);
+const fechEgres = tableRow.cells[18].innerHTML; console.log('[18] Fecha de Egreso:', fechEgres);
+const motivoEgre = tableRow.cells[19].innerHTML; console.log('[19] Motivo de Egreso:', motivoEgre);
+const primNomBene = tableRow.cells[20].innerHTML; console.log('[20] Primer Nombre Beneficiario:', primNomBene);
+const segNomBene = tableRow.cells[21].innerHTML; console.log('[21] Segundo Nombre Beneficiario:', segNomBene);
+const primApeBene = tableRow.cells[22].innerHTML; console.log('[22] Primer Apellido Beneficiario:', primApeBene);
+const segApeBene = tableRow.cells[23].innerHTML; console.log('[23] Segundo Apellido Beneficiario:', segApeBene);
+const tipoDocBene = tableRow.cells[24].innerHTML; console.log('[24] Tipo de Documento Beneficiario:', tipoDocBene);
+const numDocBene = tableRow.cells[25].innerHTML; console.log('[25] Número de Documento Beneficiario:', numDocBene);
+const unidadDeServicio = tableRow.cells[27].innerHTML; console.log('[27] UDS:', unidadDeServicio);
+const grupoDeUds = tableRow.cells[28].innerHTML; console.log('[28] Grupo de UDS:', grupoDeUds);
+const nomAgrupa = tableRow.cells[29].innerHTML; console.log('[29] NOMBRES AGRUPADOS BENE:', nomAgrupa);
+const docAgrupadoBene = tableRow.cells[30].innerHTML; console.log('[30] APELLIDOS AGRUPADOS:', docAgrupadoBene);
+const fechIngre = tableRow.cells[26].innerHTML; console.log('[26] Fecha de Vinculación:', fechIngre);
+const fechaVinculaDos = tableRow.cells[26].innerHTML; console.log('[26] Fecha de Vinculación Dos:', fechaVinculaDos);
+const stateUser = tableRow.cells[34].innerHTML; console.log('[33] ESTADO:', stateUser);
+const rhUser = tableRow.cells[37].innerHTML; console.log('[34] RH USUARIO:', rhUser);
+const ccAgrupada = tableRow.cells[31].innerHTML; console.log('[31] CC AGRUPADA:', ccAgrupada);
+const fechaingreso = tableRow.cells[32].innerHTML; console.log('[32] fecha ingreso usuario:', fechaingreso);  
+const kindUser = tableRow.cells[33].innerHTML; console.log('[33*2] Kind User:', kindUser);
+const stateUserTwo = tableRow.cells[34].innerHTML; console.log('[33] state user 2:', stateUserTwo);
+const actions = tableRow.cells[35].innerHTML; console.log('[35] action:', actions);
+const codeUDS = tableRow.cells[36].innerHTML; console.log('[36] codeUDS:', codeUDS);
+const rhUser2 = tableRow.cells[37].innerHTML; console.log('[37] RH USUARIO:', rhUser2);
+const epsUser = tableRow.cells[38].innerHTML; console.log('[38] :', epsUser);
+const pesoUno = tableRow.cells[39].innerHTML; console.log('[39] peso 1:', pesoUno);
+const pesoDos = tableRow.cells[40].innerHTML; console.log('[40] peso 2:', pesoDos);
+const pesoTres = tableRow.cells[41].innerHTML; console.log('[41] peso 3:', pesoTres);
+const tallaUno = tableRow.cells[42].innerHTML; console.log('[42] tallaUno:', tallaUno);
+const tallaDos = tableRow.cells[43].innerHTML; console.log('[43] tallaDos:', tallaDos);
+const tallaTres = tableRow.cells[44].innerHTML; console.log('[44] tallaTres:', tallaTres);
+const correoAcudiente = tableRow.cells[45].innerHTML; console.log('[45] correoAcu:', correoAcudiente);
+const epsAcudiente = tableRow.cells[46].innerHTML; console.log('[46]espAcu:', epsAcudiente);
+const primNomMama = tableRow.cells[47].innerHTML; console.log('[47] nomUnoMama:', primNomMama);
+const segNomMama = tableRow.cells[48].innerHTML; console.log('[48] nomDosMama:', segNomMama); 
+const primApeMama = tableRow.cells[49].innerHTML; console.log('[49] apeUnoMama:', primApeMama);
+const segApeMama = tableRow.cells[50].innerHTML; console.log('[50] apeDosMama:', segApeMama);
+const tipoDocMama = tableRow.cells[51].innerHTML; console.log('[51] tipoDocMama:', tipoDocMama);
+const numDocMama = tableRow.cells[52].innerHTML; console.log('[52] numDocMama:', numDocMama);
+const sexMama = tableRow.cells[53].innerHTML; console.log('[53] sexMama:', sexMama);
+const fechNacMama = tableRow.cells[54].innerHTML; console.log('[54] fechaNaciMama:', fechNacMama);
+const dptoNaciMama = tableRow.cells[55].innerHTML; console.log('[55] dptoNaciMama:', dptoNaciMama);
+const muniNaciMama = tableRow.cells[56].innerHTML; console.log('[56] muniNaciMama:', muniNaciMama);
+const epsMama = tableRow.cells[57].innerHTML; console.log('[57] epsMama:', epsMama);
+const correoMama = tableRow.cells[58].innerHTML; console.log('[58] correoMama:', correoMama);
+const telefonoMama = tableRow.cells[59].innerHTML; console.log('[59] telMama:', telefonoMama);
+const primNomPapa = tableRow.cells[60].innerHTML; console.log('[60] primNomPapa:', primNomPapa);
+const segNomPapa = tableRow.cells[61].innerHTML; console.log('[61] segNomPapa:', segNomPapa);
+const primApePapa = tableRow.cells[62].innerHTML; console.log('[62] primApePapa:', primApePapa);
+const segApePapa = tableRow.cells[63].innerHTML; console.log('[63] segApePapa:', segApePapa);
+const tipoDocPapa = tableRow.cells[64].innerHTML; console.log('[64] tipoDocPapa:', tipoDocPapa);
+const numDocPapa = tableRow.cells[65].innerHTML; console.log('[65] numDocPapa:', numDocPapa);
+const sexPapa = tableRow.cells[66].innerHTML; console.log('[66] sexPapa:', sexPapa);
+const fechNacPapa = tableRow.cells[67].innerHTML; console.log('[67] fechaNaciPapa:', fechNacPapa);
+const dptoNaciPapa = tableRow.cells[68].innerHTML; console.log('[68] dptoNaciPapa:', dptoNaciPapa);
+const muniNaciPapa = tableRow.cells[69].innerHTML; console.log('[69] muniNaciPapa:', muniNaciPapa);
+const epsPapa = tableRow.cells[70].innerHTML; console.log('[70] epsPapa:', epsPapa);
+const correoPapa = tableRow.cells[71].innerHTML; console.log('[71]:', correoPapa);
+const telefonoPapa = tableRow.cells[72].innerHTML; console.log('[72] telPapa:', telefonoPapa);
+const sistemaSaludBene = tableRow.cells[73].innerHTML; console.log('[73] sistemaSaludBene:', sistemaSaludBene);
+const ptjSisben = tableRow.cells[74].innerHTML; console.log('[74] ptjeSisben:', ptjSisben);
+const fechaPesoUno = tableRow.cells[75].innerHTML; console.log('[75] fechaPesoUno:', fechaPesoUno);
+const fechaPesoDos = tableRow.cells[76].innerHTML; console.log('[76] fechaPesoDos:', fechaPesoDos); 
+const fechaPesoTres = tableRow.cells[77].innerHTML; console.log('[77] fechaPesoTres:', fechaPesoTres);
+const perimetroBraquial = tableRow.cells[78].innerHTML; console.log('[78] perimetroBra:', perimetroBraquial);
+const fechaNovedadPsicosocial = tableRow.cells[79].innerHTML; console.log('[79] fechaNovPsicosoc:', fechaNovedadPsicosocial);
+const novedadPsicoSocial = tableRow.cells[80].innerHTML; console.log('[80] novedadPsicosoc:', novedadPsicoSocial);      
+const accionesPsicosociales = tableRow.cells[81].innerHTML; console.log('[81] accionesPsicosociales:', accionesPsicosociales);
+const sistemaSaludAcudiente = tableRow.cells[82].innerHTML; console.log('[82] sistemaSaludAcudiente:', sistemaSaludAcudiente);
+const sistemaSaludMama = tableRow.cells[83].innerHTML; console.log('[83] tipoSaludMama:', sistemaSaludMama);
+const sistemaSaludPapa = tableRow.cells[84].innerHTML; console.log('[84] sistemaSaludPapa:', sistemaSaludPapa);
+const dirResiMama = tableRow.cells[85].innerHTML; console.log('[85] dirResiMama:', dirResiMama);
+const dirResiPapa = tableRow.cells[86].innerHTML; console.log('[85] dirResiPapa:', dirResiPapa);
+const acuRelacBene = tableRow.cells[87].innerHTML; console.log('[87] acuRelacBene:', acuRelacBene);
+const ocupaMama = tableRow.cells[88].innerHTML; console.log('[88] ocupaMama:', ocupaMama);
+const ocupaPapa = tableRow.cells[89].innerHTML; console.log('[89] ocupaPapa:', ocupaPapa);
+const relacionAcudienteConBeneficiario = tableRow.cells[90].innerHTML; console.log('[90] relacionAcudienteConBeneficiario:', relacionAcudienteConBeneficiario);
+const paisNacimientoBeneficiario = tableRow.cells[91].innerHTML; console.log("[91] Pais de nacimiento del beneficiario:", paisNacimientoBeneficiario);
+const paisNacimientoAcu = tableRow.cells[92].innerHTML; console.log("[92]Pais de nacimiento del acudiente:", paisNacimientoAcu);
+const paisNacimientoMama = tableRow.cells[93].innerHTML; console.log("[93]Pais de nacimiento de la mamá:", paisNacimientoMama);
+const paisNacimientoPapa = tableRow.cells[94].innerHTML; console.log("Pais de nacimiento del papá:", paisNacimientoPapa);
+const zonaUbicacionResidencia = tableRow.cells[95].innerHTML; console.log("Zona de ubicación de la residencia:", zonaUbicacionResidencia);
+const nombreDeLaZonaResto = tableRow.cells[96].innerHTML; console.log("Nombre de la zona (resto):", nombreDeLaZonaResto);
+const nombreBarrioResidencia = tableRow.cells[97].innerHTML; console.log("Nombre del barrio de residencia:", nombreBarrioResidencia);
+const sibenDicotomico = tableRow.cells[98].innerHTML; console.log("Siben dicotómico:", sibenDicotomico);
+const jefeGrupoFamiliar = tableRow.cells[99].innerHTML; console.log("Jefe del grupo familiar:", jefeGrupoFamiliar);
+const geoGrados = tableRow.cells[100].innerHTML; console.log("Grados de georeferenciación:", geoGrados);
+const geoMinutos = tableRow.cells[101].innerHTML; console.log("Minutos de georeferenciación:", geoMinutos);
+const geoSegundos = tableRow.cells[102].innerHTML; console.log("Segundos de georeferenciación:", geoSegundos);
+const carnetVacunas = tableRow.cells[103].innerHTML; console.log("Carnet de vacunas:", carnetVacunas);
+const numeroVacunas = tableRow.cells[104].innerHTML; console.log("Número de vacunas:", numeroVacunas);
+const controlCrecimientoYDllo = tableRow.cells[105].innerHTML; console.log("Control de crecimiento y desarrollo:", controlCrecimientoYDllo);
+const numeroControles = tableRow.cells[106].innerHTML; console.log("Número de controles:", numeroControles);
+const estadoPrematurez = tableRow.cells[107].innerHTML; console.log("Estado de prematurez:", estadoPrematurez);
+const semanasDeGestacion = tableRow.cells[108].innerHTML; console.log("Semanas de gestación:", semanasDeGestacion);
+const carnetVacunasAlDia = tableRow.cells[109].innerHTML; console.log("carnetVacunasAlDia", carnetVacunasAlDia);
+const fechaVerificacionCarnetVacunas = tableRow.cells[110].innerHTML; console.log("fechaVerificacionCarnetVacunas", fechaVerificacionCarnetVacunas);
+const siDesnutricionCanalizadoAEntidadSalud = tableRow.cells[111].innerHTML; console.log("siDesnutricionCanalizadoAEntidadSalud", siDesnutricionCanalizadoAEntidadSalud);
+const ftltSiDesnutricion = tableRow.cells[112].innerHTML; console.log("ftltSiDesnutricion", ftltSiDesnutricion);
+const hijoMgdeICBF = tableRow.cells[113].innerHTML; console.log("hijoMgdeICBF", hijoMgdeICBF);
+const lactanciaExclusiva = tableRow.cells[114].innerHTML; console.log("lactanciaExclusiva", lactanciaExclusiva);
+const siNoLactanciaExclusivaCual = tableRow.cells[115].innerHTML; console.log("siNoLactanciaExclusivaCual", siNoLactanciaExclusivaCual);
+const lactMaternaExcluMes = tableRow.cells[116].innerHTML; console.log("lactMaternaExcluMes", lactMaternaExcluMes);
+const totalLactMaternaMes = tableRow.cells[117].innerHTML; console.log("totalLactMaternaMes", totalLactMaternaMes);
+const geoFecha = tableRow.cells[118].innerHTML; console.log("geoFecha", geoFecha);
+const geoHora = tableRow.cells[119].innerHTML; console.log("geoHora", geoHora);
+const recoEtnico = tableRow.cells[120].innerHTML; console.log("recoEtnico", recoEtnico);
+const puebloIndigena = tableRow.cells[121].innerHTML; console.log("puebloIndigena", puebloIndigena);
+const resguardoIndigena = tableRow.cells[122].innerHTML; console.log("resguardoIndigena", resguardoIndigena);
+const territorioDpto = tableRow.cells[123].innerHTML; console.log("territorioDpto", territorioDpto);
+const territorioMcpio = tableRow.cells[124].innerHTML; console.log("territorioMcpio", territorioMcpio);
+const romGitano = tableRow.cells[125].innerHTML; console.log("romGitano", romGitano);
+const tieneDiscapacidad = tableRow.cells[126].innerHTML; console.log("tieneDiscapacidad", tieneDiscapacidad);
+const entidadDiscapacidad = tableRow.cells[127].innerHTML; console.log("entidadDiscapacidad", entidadDiscapacidad);
+const rlcpcdRegistro = tableRow.cells[128].innerHTML; console.log("rlcpcdRegistro", rlcpcdRegistro);
+const ayudaDeOtraPersona = tableRow.cells[129].innerHTML; console.log("ayudaDeOtraPersona", ayudaDeOtraPersona);
+const ayudaTecnica = tableRow.cells[130].innerHTML; console.log("ayudaTecnica", ayudaTecnica);
+const cuentaConLaAyuda = tableRow.cells[131].innerHTML; console.log("cuentaConLaAyuda", cuentaConLaAyuda);
+const requiereRehabilitacion = tableRow.cells[132].innerHTML; console.log("requiereRehabilitacion", requiereRehabilitacion);
+const recibeTerapiaRehabilitacion = tableRow.cells[133].innerHTML; console.log("recibeTerapiaRehabilitacion", recibeTerapiaRehabilitacion);
+const interdiccionSiNo = tableRow.cells[134].innerHTML; console.log("interdiccionSiNo", interdiccionSiNo);
+const categoriaDiscapacidad = tableRow.cells[135].innerHTML; console.log("categoriaDiscapacidad", categoriaDiscapacidad);
+const nivelDificultadDesempeno = tableRow.cells[136].innerHTML; console.log("nivelDificultadDesempeno", nivelDificultadDesempeno);
+const descripcionDiscapacidad = tableRow.cells[137].innerHTML; console.log("descripcionDiscapacidad", descripcionDiscapacidad);
+const dxNutriUno =  tableRow.cells[138].innerHTML; console.log("DxNutriUno", dxNutriUno);
+const dxNutriDos =  tableRow.cells[139].innerHTML; console.log("DxNutriDos", dxNutriDos);
+const dxNutriTres =  tableRow.cells[140].innerHTML; console.log("DxNutriTres", dxNutriTres);
+const criterioFocalizacion =  tableRow.cells[141].innerHTML; console.log("criterioFocalizacion", criterioFocalizacion);
+const geoGradosDos =  tableRow.cells[142].innerHTML; console.log("geoGradosDos", geoGradosDos);
+const geoMinutosDos =  tableRow.cells[143].innerHTML; console.log("geoMinutosDos", geoMinutosDos);
+const geoSegundosDos =  tableRow.cells[144].innerHTML; console.log("geoSegundosDos", geoSegundosDos);
+const primNomJefe = tableRow.cells[145].innerHTML; console.log("primNomJefe", primNomJefe);
+const segNomJefe = tableRow.cells[146].innerHTML; console.log("segNomJefe", segNomJefe);
+const primApeJefe = tableRow.cells[147].innerHTML; console.log("primApeJefe", primApeJefe);
+const segApeJefe = tableRow.cells[148].innerHTML; console.log("segApeJefe", segApeJefe);
+const tipoDocJefe = tableRow.cells[149].innerHTML; console.log("tipoDocJefe", tipoDocJefe);
+const numDocJefe = tableRow.cells[150].innerHTML; console.log("numDocJefe", numDocJefe);
+const fechNacJefe = tableRow.cells[151].innerHTML; console.log("fechNacJefe", fechNacJefe);
+const paisNacimientoJefe = tableRow.cells[152].innerHTML; console.log("paisNacimientoJefe", paisNacimientoJefe);
+const dptoNaciJefe = tableRow.cells[153].innerHTML; console.log("dptoNaciJefe", dptoNaciJefe);
+const muniNaciJefe = tableRow.cells[154].innerHTML; console.log("muniNaciJefe", muniNaciJefe);
+const sexJefe = tableRow.cells[155].innerHTML; console.log("sexJefe", sexJefe);
+const telefonoJefe = tableRow.cells[156].innerHTML; console.log("telefonoJefe", telefonoJefe);
+const dirResiJefe = tableRow.cells[157].innerHTML; console.log("dirResiJefe", dirResiJefe);
+const sistemaSaludJefe = tableRow.cells[158].innerHTML; console.log("sistemaSaludJefe", sistemaSaludJefe);
+const epsJefe = tableRow.cells[159].innerHTML; console.log("epsJefe", epsJefe);
+const correoJefe = tableRow.cells[160].innerHTML; console.log("correoJefe", correoJefe);
+const ocupaJefe = tableRow.cells[161].innerHTML; console.log("ocupaJefe", ocupaJefe);
+const acuRelacBeneJefe = tableRow.cells[162].innerHTML; console.log("acuRelacBeneJefe", acuRelacBeneJefe);
+
+
+ const crearModal = bootstrap.Modal.getOrCreateInstance("#createModal")
+  crearModal.show();
+
+
+document.getElementById("usuarioId").value = id;
+console.log('ID de Usuario:', id);
+
+document.getElementById("stateUser").value = stateUser;
+console.log('Estado del Usuario:', stateUser);
+
+document.getElementById("fechIngre").value = fechIngre;
+console.log('Fecha de Ingreso:', fechIngre);
+
+document.getElementById("primNomBene").value = primNomBene;
+console.log('Primer Nombre del Beneficiario:', primNomBene);
+
+document.getElementById("segNomBene").value = segNomBene;
+console.log('Segundo Nombre del Beneficiario:', segNomBene);
+
+document.getElementById("primApeBene").value = primApeBene;
+console.log('Primer Apellido del Beneficiario:', primApeBene);
+
+document.getElementById("segApeBene").value = segApeBene;
+console.log('Segundo Apellido del Beneficiario:', segApeBene);
+
+document.getElementById("tipoDocBene").value = tipoDocBene;
+console.log('Tipo de Documento del Beneficiario:', tipoDocBene);
+
+document.getElementById("numDocBene").value = numDocBene;
+console.log('Número de Documento del Beneficiario:', numDocBene);
+
+document.getElementById("fechNacBene").value = fechNacBene;
+console.log('Fecha de Nacimiento del Beneficiario:', fechNacBene);
+
+document.getElementById("dptoNaciBene").value = dptoNaciBene;
+console.log('Departamento de Nacimiento del Beneficiario:', dptoNaciBene);
+
+document.getElementById("muniNaciBene").value = muniNaciBene;
+console.log('Municipio de Nacimiento del Beneficiario:', muniNaciBene);
+
+document.getElementById("sexBene").value = sexBene;
+console.log('Sexo del Beneficiario:', sexBene);
+
+document.getElementById("metsSoc").value = metsSoc;
+console.log('Metas Sociales:', metsSoc);
+
+document.getElementById("primNomAcu").value = primNomAcu;
+console.log('Primer Nombre del Acudiente:', primNomAcu);
+
+document.getElementById("epsUser").value = epsUser;
+console.log('EPS USUARIO:', epsUser);
+
+document.getElementById("segNomAcu").value = segNomAcu;
+console.log('Segundo Nombre del Acudiente:', segNomAcu);
+
+document.getElementById("primApeAcu").value = primApeAcu;
+console.log('Primer Apellido del Acudiente:', primApeAcu);
+
+document.getElementById("segApeAcu").value = segApeAcu;
+console.log('Segundo Apellido del Acudiente:', segApeAcu);
+
+document.getElementById("tipoDocAcu").value = tipoDocAcu;
+console.log('Tipo de Documento del Acudiente:', tipoDocAcu);
+
+document.getElementById("numDocAcu").value = numDocAcu;
+console.log('Número de Documento del Acudiente:', numDocAcu);
+
+document.getElementById("sexAcu").value = sexAcu;
+console.log('Sexo del Acudiente:', sexAcu);
+
+document.getElementById("fechNacAcu").value = fechNacAcu;
+console.log('Fecha de Nacimiento del Acudiente:', fechNacAcu);
+
+document.getElementById("dptoNaciAcu").value = dptoNaciAcu;
+console.log('Departamento de Nacimiento del Acudiente:', dptoNaciAcu);
+
+document.getElementById("muniNaciAcu").value = muniNaciAcu;
+console.log('Municipio de Nacimiento del Acudiente:', muniNaciAcu);
+
+document.getElementById("telAcu").value = telAcu;
+console.log('Teléfono del Acudiente:', telAcu);
+
+document.getElementById("dirResi").value = dirResi;
+console.log('Dirección de Residencia:', dirResi);
+
+document.getElementById("unidadDeServicio").value = unidadDeServicio;
+console.log('Unidad de Servicio:', unidadDeServicio);
+
+document.getElementById("grupoDeUds").value = grupoDeUds;
+console.log('Grupo de UDS:', grupoDeUds);
+
+document.getElementById("fechEgres").value = fechEgres;
+console.log('Fecha de Egreso:', fechEgres);
+
+document.getElementById("motivoEgre").value = motivoEgre;
+console.log('Motivo de Egreso:', motivoEgre);
+
+document.getElementById("kindUser").value = kindUser;
+console.log('Tipo de Usuario:', kindUser);
+
+document.getElementById("codeUDS").value = codeUDS;
+console.log('Código de la UDS:', codeUDS);
+
+document.getElementById("rhUser").value = rhUser;
+console.log('RH del Usuario:', rhUser);
+
+// document.getElementById("rhUser2").value = rhUser2;
+// console.log('RH del Usuario 2:', rhUser2);
+
+document.getElementById("sistemaSaludBene").value = sistemaSaludBene;
+console.log('Sistema de Salud del Beneficiario:', sistemaSaludBene);
+
+document.getElementById("pesoUno").value = pesoUno;
+console.log('Peso Uno:', pesoUno);
+
+document.getElementById("pesoDos").value = pesoDos;
+console.log('Peso Dos:', pesoDos);
+
+document.getElementById("pesoTres").value = pesoTres;
+console.log('Peso Tres:', pesoTres);
+
+document.getElementById("tallaUno").value = tallaUno;
+console.log('Talla Uno:', tallaUno);
+
+document.getElementById("tallaDos").value = tallaDos;
+console.log('Talla Dos:', tallaDos);
+
+document.getElementById("tallaTres").value = tallaTres;
+console.log('Talla Tres:', tallaTres);
+
+document.getElementById("correoAcudiente").value = correoAcudiente;
+console.log('Correo del Acudiente:', correoAcudiente);
+
+document.getElementById("epsAcudiente").value = epsAcudiente;
+console.log('EPS del Acudiente:', epsAcudiente);
+
+document.getElementById("primNomMama").value = primNomMama;
+console.log('Primer Nombre de la Mamá:', primNomMama);
+
+document.getElementById("segNomMama").value = segNomMama;
+console.log('Segundo Nombre de la Mamá:', segNomMama);
+
+document.getElementById("primApeMama").value = primApeMama;
+console.log('Primer Apellido de la Mamá:', primApeMama);
+
+document.getElementById("segApeMama").value = segApeMama;
+console.log('Segundo Apellido de la Mamá:', segApeMama);
+
+document.getElementById("tipoDocMama").value = tipoDocMama;
+console.log('Tipo de Documento de la Mamá:', tipoDocMama);
+
+document.getElementById("numDocMama").value = numDocMama;
+console.log('Número de Documento de la Mamá:', numDocMama);
+
+document.getElementById("sexMama").value = sexMama;
+console.log('Sexo de la Mamá:', sexMama);
+
+document.getElementById("fechNacMama").value = fechNacMama;
+console.log('Fecha de Nacimiento de la Mamá:', fechNacMama);
+
+document.getElementById("dptoNaciMama").value = dptoNaciMama;
+console.log('Departamento de Nacimiento de la Mamá:', dptoNaciMama);
+
+document.getElementById("muniNaciMama").value = muniNaciMama;
+console.log('Municipio de Nacimiento de la Mamá:', muniNaciMama);
+
+document.getElementById("epsMama").value = epsMama;
+console.log('EPS de la Mamá:', epsMama);
+
+document.getElementById("correoMama").value = correoMama;
+console.log('Correo de la Mamá:', correoMama);
+
+document.getElementById("telefonoMama").value = telefonoMama;
+console.log('Teléfono de la Mamá:', telefonoMama);
+
+document.getElementById("primNomPapa").value = primNomPapa;
+console.log('Primer Nombre del Papá:', primNomPapa);
+
+document.getElementById("segNomPapa").value = segNomPapa;
+console.log('Segundo Nombre del Papá:', segNomPapa);
+
+document.getElementById("primApePapa").value = primApePapa;
+console.log('Primer Apellido del Papá:', primApePapa);
+
+document.getElementById("segApePapa").value = segApePapa;
+console.log('Segundo Apellido del Papá:', segApePapa);
+
+document.getElementById("tipoDocPapa").value = tipoDocPapa;
+console.log('Tipo de Documento del Papá:', tipoDocPapa);
+
+document.getElementById("numDocPapa").value = numDocPapa;
+console.log('Número de Documento del Papá:', numDocPapa);
+
+document.getElementById("sexPapa").value = sexPapa;
+console.log('Sexo del Papá:', sexPapa);
+
+document.getElementById("fechNacPapa").value = fechNacPapa;
+console.log('Fecha de Nacimiento del Papá:', fechNacPapa);
+
+document.getElementById("dptoNaciPapa").value = dptoNaciPapa;
+console.log('Departamento de Nacimiento del Papá:', dptoNaciPapa);
+
+document.getElementById("muniNaciPapa").value = muniNaciPapa;
+console.log('Municipio de Nacimiento del Papá:', muniNaciPapa);
+
+document.getElementById("epsPapa").value = epsPapa;
+console.log('EPS del Papá:', epsPapa);
+
+document.getElementById("correoPapa").value = correoPapa;
+console.log('Correo del Papá:', correoPapa);
+
+document.getElementById("telefonoPapa").value = telefonoPapa;
+console.log('Teléfono del Papá:', telefonoPapa);
+
+document.getElementById("sistemaSaludPapa").value = sistemaSaludPapa;
+console.log('Tipo de Afiliación del Papá:', sistemaSaludPapa);
+
+document.getElementById("ptjSisben").value = ptjSisben;
+console.log('Puntaje Sisben:', ptjSisben);
+
+document.getElementById("fechaPesoUno").value = fechaPesoUno;
+console.log('Fecha Peso Uno:', fechaPesoUno);
+
+document.getElementById("fechaPesoDos").value = fechaPesoDos;
+console.log('Fecha Peso Dos:', fechaPesoDos);
+
+document.getElementById("fechaPesoTres").value = fechaPesoTres;
+console.log('Fecha Peso Tres:', fechaPesoTres);
+
+document.getElementById("perimetroBraquial").value = perimetroBraquial;
+console.log('Perímetro Braquial:', perimetroBraquial);
+
+document.getElementById("fechaNovedadPsicosocial").value = fechaNovedadPsicosocial;
+console.log('Fecha de Novedad Psicosocial:', fechaNovedadPsicosocial);
+
+document.getElementById("novedadPsicoSocial").value = novedadPsicoSocial;
+console.log('Novedad Psicosocial:', novedadPsicoSocial);
+
+document.getElementById("accionesPsicosociales").value = accionesPsicosociales;
+console.log('Acciones Psicosociales:', accionesPsicosociales);
+
+document.getElementById("sistemaSaludAcudiente").value = sistemaSaludAcudiente;
+console.log('Sistema de Salud del Acudiente:', sistemaSaludAcudiente);
+
+document.getElementById("sistemaSaludMama").value = sistemaSaludMama;
+console.log('Sistema de Salud de la Mamá:', sistemaSaludMama);
+
+//document.getElementById("sistemaSaludPapaDos").value = sistemaSaludPapaDos;
+//console.log('Sistema de Salud del Papá:', sistemaSaludPapaDos);
+
+document.getElementById("dirResiMama").value = dirResiMama;
+console.log('Dirección de Residencia de la Mamá:', dirResiMama);
+
+document.getElementById("dirResiPapa").value = dirResiPapa;
+console.log('Dirección de Residencia del papa:', dirResiPapa);
+
+document.getElementById("acuRelacBene").value = acuRelacBene;
+console.log('Relación acudiente con el beneficiario:', acuRelacBene);
+
+document.getElementById("ocupaMama").value = ocupaMama;
+console.log('Ocupación de la mama:', ocupaMama);
+
+document.getElementById("ocupaPapa").value = ocupaPapa;
+console.log('Ocupación del papa:', ocupaPapa);
+
+document.getElementById("relacionAcudienteConBeneficiario").value = relacionAcudienteConBeneficiario;
+console.log('relacionAcudienteConBeneficiario:', relacionAcudienteConBeneficiario);
+
+document.getElementById("paisNacimientoBeneficiario").value = paisNacimientoBeneficiario;
+console.log('País de nacimiento del beneficiario:', paisNacimientoBeneficiario);
+
+document.getElementById("paisNacimientoAcu").value = paisNacimientoAcu;
+console.log('País de nacimiento del acudiente:', paisNacimientoAcu);
+
+document.getElementById("paisNacimientoMama").value = paisNacimientoMama;
+console.log('País de nacimiento de la mamá:', paisNacimientoMama);
+
+document.getElementById("paisNacimientoPapa").value = paisNacimientoPapa;
+console.log('País de nacimiento del papá:', paisNacimientoPapa);
+
+document.getElementById("zonaUbicacionResidencia").value = zonaUbicacionResidencia;
+console.log('Zona de ubicación de la residencia:', zonaUbicacionResidencia);
+
+document.getElementById("nombreDeLaZonaResto").value = nombreDeLaZonaResto;
+console.log('Nombre de la zona (resto):', nombreDeLaZonaResto);
+
+document.getElementById("nombreBarrioResidencia").value = nombreBarrioResidencia;
+console.log('Nombre del barrio de residencia:', nombreBarrioResidencia);
+
+document.getElementById("sibenDicotomico").value = sibenDicotomico;
+console.log('Siben dicotómico:', sibenDicotomico);
+
+document.getElementById("jefeGrupoFamiliar").value = jefeGrupoFamiliar;
+console.log('Jefe del grupo familiar:', jefeGrupoFamiliar);
+
+document.getElementById("geoGrados").value = geoGrados;
+console.log('Grados de georeferenciación:', geoGrados);
+
+document.getElementById("geoMinutos").value = geoMinutos;
+console.log('Minutos de georeferenciación:', geoMinutos);
+
+document.getElementById("geoSegundos").value = geoSegundos;
+console.log('Segundos de georeferenciación:', geoSegundos);
+
+document.getElementById("carnetVacunas").value = carnetVacunas;
+console.log('Carnet de vacunas:', carnetVacunas);
+
+document.getElementById("numeroVacunas").value = numeroVacunas;
+console.log('Número de vacunas:', numeroVacunas);
+
+document.getElementById("controlCrecimientoYDllo").value = controlCrecimientoYDllo;
+console.log('Control de crecimiento y desarrollo:', controlCrecimientoYDllo);
+
+document.getElementById("numeroControles").value = numeroControles;
+console.log('Número de controles:', numeroControles);
+
+document.getElementById("estadoPrematurez").value = estadoPrematurez;
+console.log('Estado de prematurez:', estadoPrematurez);
+
+document.getElementById("semanasDeGestacion").value = semanasDeGestacion;
+console.log('Semanas de gestación:', semanasDeGestacion);
+
+document.getElementById("carnetVacunasAlDia").value = carnetVacunasAlDia;
+console.log('carnetVacunasAlDia:', carnetVacunasAlDia);
+
+document.getElementById("fechaVerificacionCarnetVacunas").value = fechaVerificacionCarnetVacunas;
+console.log('fechaVerificacionCarnetVacunas:', fechaVerificacionCarnetVacunas);
+
+document.getElementById("siDesnutricionCanalizadoAEntidadSalud").value = siDesnutricionCanalizadoAEntidadSalud;
+console.log('siDesnutricionCanalizadoAEntidadSalud:', siDesnutricionCanalizadoAEntidadSalud);
+
+document.getElementById("ftltSiDesnutricion").value = ftltSiDesnutricion;
+console.log('ftltSiDesnutricion:', ftltSiDesnutricion);
+
+document.getElementById("hijoMgdeICBF").value = hijoMgdeICBF;
+console.log('hijoMgdeICBF:', hijoMgdeICBF);
+
+document.getElementById("lactanciaExclusiva").value = lactanciaExclusiva;
+console.log('lactanciaExclusiva:', lactanciaExclusiva);
+
+document.getElementById("siNoLactanciaExclusivaCual").value = siNoLactanciaExclusivaCual;
+console.log('siNoLactanciaExclusivaCual:', siNoLactanciaExclusivaCual);
+
+document.getElementById("lactMaternaExcluMes").value = lactMaternaExcluMes;
+console.log('lactMaternaExcluMes:', lactMaternaExcluMes);
+
+document.getElementById("totalLactMaternaMes").value = totalLactMaternaMes;
+console.log('totalLactMaternaMes:', totalLactMaternaMes);
+
+document.getElementById("geoFecha").value = geoFecha;
+console.log('geoFecha:', geoFecha);
+
+document.getElementById("geoHora").value = geoHora;
+console.log('geoHora:', geoHora);
+
+document.getElementById("recoEtnico").value = recoEtnico;
+console.log('recoEtnico:', recoEtnico);
+
+document.getElementById("puebloIndigena").value = puebloIndigena;
+console.log('puebloIndigena:', puebloIndigena);
+
+document.getElementById("resguardoIndigena").value = resguardoIndigena;
+console.log('resguardoIndigena:', resguardoIndigena);
+
+document.getElementById("territorioDpto").value = territorioDpto;
+console.log('territorioDpto:', territorioDpto);
+
+document.getElementById("territorioMcpio").value = territorioMcpio;
+console.log('territorioMcpio:', territorioMcpio);
+
+document.getElementById("romGitano").value = romGitano;
+console.log('romGitano:', romGitano);
+
+document.getElementById("tieneDiscapacidad").value = tieneDiscapacidad;
+console.log("tieneDiscapacidad", tieneDiscapacidad);
+
+document.getElementById("entidadDiscapacidad").value = entidadDiscapacidad;
+console.log("entidadDiscapacidad", entidadDiscapacidad);
+
+document.getElementById("rlcpcdRegistro").value = rlcpcdRegistro;
+console.log("rlcpcdRegistro", rlcpcdRegistro);
+
+document.getElementById("ayudaDeOtraPersona").value = ayudaDeOtraPersona;
+console.log("ayudaDeOtraPersona", ayudaDeOtraPersona);
+
+document.getElementById("ayudaTecnica").value = ayudaTecnica;
+console.log("ayudaTecnica", ayudaTecnica);
+
+document.getElementById("cuentaConLaAyuda").value = cuentaConLaAyuda;
+console.log("cuentaConLaAyuda", cuentaConLaAyuda);
+
+document.getElementById("requiereRehabilitacion").value = requiereRehabilitacion;
+console.log("requiereRehabilitacion", requiereRehabilitacion);
+
+document.getElementById("recibeTerapiaRehabilitacion").value = recibeTerapiaRehabilitacion;
+console.log("recibeTerapiaRehabilitacion", recibeTerapiaRehabilitacion);
+
+document.getElementById("interdiccionSiNo").value = interdiccionSiNo;
+console.log("interdiccionSiNo", interdiccionSiNo);
+
+document.getElementById("categoriaDiscapacidad").value = categoriaDiscapacidad;
+console.log("categoriaDiscapacidad", categoriaDiscapacidad);
+
+document.getElementById("nivelDificultadDesempeno").value = nivelDificultadDesempeno;
+console.log("nivelDificultadDesempeno", nivelDificultadDesempeno);
+
+document.getElementById("descripcionDiscapacidad").value = descripcionDiscapacidad;
+console.log("descripcionDiscapacidad", descripcionDiscapacidad);
+
+document.getElementById("dxNutriUno").value = dxNutriUno;
+console.log("dxNutriUno", dxNutriUno);
+
+document.getElementById("dxNutriDos").value = dxNutriDos;
+console.log("dxNutriDos", dxNutriDos);
+
+document.getElementById("dxNutriTres").value = dxNutriTres;
+console.log("dxNutriTres", dxNutriTres);
+
+document.getElementById("criterioFocalizacion").value = criterioFocalizacion;
+console.log("criterioFocalizacion", criterioFocalizacion);
+
+document.getElementById("geoGradosDos").value = geoGradosDos;
+console.log("geoGradosDos", geoGradosDos);
+
+document.getElementById("geoMinutosDos").value = geoMinutosDos;
+console.log("geoMinutosDos", geoMinutosDos);
+
+document.getElementById("geoSegundosDos").value = geoSegundosDos; 
+console.log("geoSegundosDos", geoSegundosDos);
+
+document.getElementById("primNomJefe").value = primNomJefe; 
+console.log("primNomJefe", primNomJefe);
+
+document.getElementById("segNomJefe").value = segNomJefe; 
+console.log("segNomJefe", segNomJefe);
+
+document.getElementById("primApeJefe").value = primApeJefe; 
+console.log("primApeJefe", primApeJefe);
+
+document.getElementById("segApeJefe").value = segApeJefe; 
+console.log("segApeJefe", segApeJefe);
+
+document.getElementById("tipoDocJefe").value = tipoDocJefe; 
+console.log("tipoDocJefe", tipoDocJefe);
+
+document.getElementById("numDocJefe").value = numDocJefe; 
+console.log("numDocJefe", numDocJefe);
+
+document.getElementById("fechNacJefe").value = fechNacJefe; 
+console.log("fechNacJefe", fechNacJefe);
+
+document.getElementById("paisNacimientoJefe").value = paisNacimientoJefe; 
+console.log("paisNacimientoJefe", paisNacimientoJefe);
+
+document.getElementById("dptoNaciJefe").value = dptoNaciJefe; 
+console.log("dptoNaciJefe", dptoNaciJefe);
+
+document.getElementById("muniNaciJefe").value = muniNaciJefe; 
+console.log("muniNaciJefe", muniNaciJefe);
+
+document.getElementById("sexJefe").value = sexJefe; 
+console.log("sexJefe", sexJefe);
+
+document.getElementById("telefonoJefe").value = telefonoJefe; 
+console.log("telefonoJefe", telefonoJefe);
+
+document.getElementById("dirResiJefe").value = dirResiJefe; 
+console.log("dirResiJefe", dirResiJefe);
+
+document.getElementById("sistemaSaludJefe").value = sistemaSaludJefe; 
+console.log("sistemaSaludJefe", sistemaSaludJefe);
+
+document.getElementById("epsJefe").value = epsJefe; 
+console.log("epsJefe", epsJefe);
+
+document.getElementById("epsJefe").value = correoJefe; 
+console.log("epsJefe", correoJefe);
+
+document.getElementById("epsJefe").value = ocupaJefe; 
+console.log("epsJefe", ocupaJefe);
+
+document.getElementById("acuRelacBeneJefe").value = acuRelacBeneJefe; 
+console.log("acuRelacBeneJefe", acuRelacBeneJefe);
+
+
+}
+
+
+
+function borrarUsuarioModal(button) {
+  const id = button.dataset.usuarioId;
+
+  if (id !== null && id !== undefined) {
+    console.log("ID a borrar (borrarUsuarioModal):", id);
+    const borrarButton = document.getElementById('borrarUsuario');
+    borrarButton.dataset.usuarioId = id; 
+    const borraModal = bootstrap.Modal.getOrCreateInstance('#borrarModal'); 
+    borraModal.show();
+  } else {
+    console.error("El ID es nulo o indefinido (borrarUsuarioModal).");
+  }
+}
+
+
+function clearForm () {
+  const form = document.getElementById('crearUsuario');
+  form.reset();
+  const dataAttributeId = document.getElementById('guardarUsuario')
+  dataAttributeId.removeAttribute('data-id');
+}
+
+
+
+
+
+
+function validarBorrado(button) {
+  const id = button.dataset.usuarioId;
+
+  /*if (id !== null && id !== undefined) {
+    console.log("ID a borrar (validarBorrado):", id);
+    google.script.run
+      .withSuccessHandler(result => {
+        const tableBody = document.getElementById('tableBody-usuarios');
+        tableBody.innerHTML = '';
+        buscarDatos();
+        const dataAttributeId = document.getElementById('borrarUsuario');
+        dataAttributeId.removeAttribute('data-usuario-id');
+        const borrarModal = bootstrap.Modal.getOrCreateInstance('#borrarModal');
+        borrarModal.hide();
+      })
+      .borrarUsuario(id);
+  } else {
+    console.error("El ID es nulo o indefinido (validarBorrado).");
+  }*/
+
+  window.alert('😡😡NO ESTÁ PERMITIDO EL ELIMINAR USUARIOS😡😡')
+}
+
+function loadingOnOff () {
+  document.querySelector('#guardarUsuario').classList.toggle("d-none")
+  document.querySelector('#loadingButton').classList.toggle("d-none")
+} 
+
+
+function almacenarInformacionAdicional() {
+  const formAct = document.getElementById('crearPlanilla');
+  const udsGroup = formAct.udsGroup.value;
+  const kindFormat = formAct.kindFormat.value;
+  const docenteResponsable = formAct.docenteResponsable.value; 
+  const documentoResponsable = formAct.documentoResponsable.value;
+  const mesEntrega = formAct.mesEntrega.value;
+  const telefonoResponsableUds = formAct.telefonoResponsableUds.value;
+  const fechaCreacion = formAct.fechaCreacion.value;
+
+  if (!kindFormat && !udsGroup && !mesEntrega  && !!docenteResponsable & !!documentoResponsable &!!telefonoResponsableUds &!!fechaCreacion) {
+    window.alert('Upsss!!! 😮😮😮😮 por favor, selecciona tipo de planilla a descargar y completa los campos.');
+    return;
+  }
+
+
+  google.script.run
+    .withSuccessHandler(result => {
+      const crearModalFileType = bootstrap.Modal.getOrCreateInstance('#downLoadModal');
+      document.getElementById('botonesDescarga').style.display = 'block';
+      // guardarQueryBtn.style.display = 'none'; 
+    })
+    .agregarPedidoPlanilla(udsGroup, kindFormat, docenteResponsable, documentoResponsable, mesEntrega, telefonoResponsableUds, fechaCreacion);
+}
+
+function descargarArchivoPDF() {
+  google.script.run.withSuccessHandler(function (link) {
+    if (link && isValidURL(link)) {
+      window.open(link, '_blank');
+      resetModalState();
+    } else {
+      console.error("El enlace no es válido o está vacío.");
+    }
+  }).obtenerEnlaceDescarga();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Almacena una referencia al botón guardarQuery
+  guardarQueryBtn = document.getElementById('guardarQuery');
+
+  // Agrega un evento change al selector del tipo de planilla
+  document.getElementById('kindFormat').addEventListener('change', function () {
+    const botonesDescarga = document.getElementById('botonesDescarga');
+    const guardarQuery = document.getElementById('guardarQuery');
+    
+    // Oculta los botonesDescarga si el tipo de planilla cambia
+    botonesDescarga.style.display = 'none';
+    
+    // Muestra el botón de guardarQuery
+    guardarQuery.style.display = 'block';
+  });
+});
+
+
+function isValidURL(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function resetModalState() {
+  document.getElementById('solicitarArchivo').style.display = 'block';
+  document.getElementById('botonesDescarga').style.display = 'none';
+}
+
+
+</script>

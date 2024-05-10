@@ -1,0 +1,328 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+
+<style>
+  .container {
+    max-width: 960px;
+  }
+
+  #createModal input::placeholder {
+    font-size: 10px;
+    font-weight: bold;
+    color: #262626;
+  }
+
+  thead {
+    background-color: #AFEEEE;
+  }
+
+  tfoot.tableFoot-usuarios:hover {
+    pointer-events: none;
+  }
+
+
+  thead#tableHead_users:hover {
+    pointer-events: none;
+  }
+
+  .rowTemplate,
+  .form-control:hover {
+    background-color: #AFEEEE;
+  }
+
+  .paddingNew {
+    margin: 2px
+  }
+
+  .titleCrud {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    color: red;
+  }
+
+  #createModal input {
+    font-size: 14px;
+  }
+
+
+  #tipoDocBene,
+  #tipoDocPapa,
+  #tipoDocMama {
+    font-size: 10px;
+    font-weight: bold;
+    color: #262626;
+    height: 36px;
+  }
+
+  #sistemaSaludBene {
+    font-size: 10px;
+    font-weight: bold;
+    color: #262626;
+    height: 36px;
+  }
+
+  #rhUser,
+  #epsUser,
+  #carnetVacunasAlDia,
+  #recoEtnico,
+  #tieneDiscapacidad,
+  #rlcpcdRegistro,
+  #ayudaDeOtraPersona,
+  #ayudaTecnica,
+  #cuentaConLaAyuda,
+  #recibeTerapiaRehabilitacion,
+  #categoriaDiscapacidad,
+  #carnetVacunasAlDia,
+  #numeroControles,
+  #siDesnutricionCanalizadoAEntidadSalud,
+  #ftltSiDesnutricion,
+  #hijoMgdeICBF,
+  #lactanciaExclusiva,
+  #siNoLactanciaExclusivaCual,
+  #epsAcudiente,
+  #epsMama,
+  #epsPapa,
+  #interdiccionSiNo,
+  #requiereRehabilitacion,
+  #dxNutriUno,
+  #dxNutriDos,
+  #dxNutriTres, 
+  #dptoNaciBene, 
+  #dptoNaciAcu, 
+  #dptoNaciJefe, 
+  #dptoNaciPapa,
+  #dptoNaciMama,
+  #tipoDocJefe, 
+  #sexJefe,
+  #sistemaSaludJefe, 
+  #epsJefe {
+    font-size: 10px;
+    font-weight: bold;
+    color: #000000;
+    height: 36px;
+  }
+
+  #tipoDocAcu {
+    font-size: 10px;
+    font-weight: bold;
+    color: #000000;
+    height: 36px;
+  }
+
+  #sistemaSaludAcudiente,
+  #sistemaSaludMama,
+  #sistemaSaludPapa,
+  #sibenDicotomico,
+  #zonaUbicacionResidencia,
+  #carnetVacunas,
+  #controlCrecimientoYDllo,
+  #estadoPrematurez {
+    font-size: 10px;
+    font-weight: bold;
+    color: #262626;
+    height: 36px;
+  }
+
+  #kindUser,
+  #stateUser {
+    font-size: 10px;
+    font-weight: bold;
+    color: #262626;
+    height: 36px;
+  }
+
+  #fechIngre,
+  #fechEgres,
+  #fechNacAcu,
+  #fechNacMama,
+  #fechNacPapa,
+  #fechNacBene {
+    font-size: 10px;
+    color: #262626;
+    height: 36px;
+  }
+
+  #sexAcu,
+  #sexMama,
+  #sexPapa,
+  #sexBene {
+    font-size: 10px;
+    font-weight: bold;
+    color: #262626;
+    height: 36px;
+  }
+
+
+  .datailOne {
+    background-color: #3498db;
+  }
+
+  .datailTwo {
+    background-color: #2ecc71;
+  }
+
+  .datailTree {
+    background-color: #e74c3c;
+  }
+
+  .datailFour {
+    background-color: #f39c12;
+  }
+
+  .datailFive {
+    background-color: #9b59b6;
+  }
+
+  .datailSix {
+    background-color: #A8F09E;
+  }
+
+  .datailSeventh {
+    background-color: #1982FF;
+  }
+
+
+  .datailOne,
+  .datailTwo,
+  .datailTree,
+  .datailFour,
+  .datailFive,
+  .datailSix, 
+  .datailSeventh {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+  }
+
+  .datailOne:hover,
+  .datailOne:focus,
+  .datailTwo:hover,
+  .datailTwo:focus,
+  .datailTree:hover,
+  .datailTree:focus,
+  .datailFour:hover,
+  .datailFour:focus,
+  .datailFive:hover,
+  .datailFive:focus,
+  .datailSix:hover,
+  .datailSix:focus {
+
+  }
+
+
+  #metsSoc {
+    font-size: 10px;
+    font-weight: bold;
+    color: #262626;
+    height: 36px;
+  }
+
+  summary {
+    font-size: 14px;
+    color: black;
+    font-weight: bold;
+    list-style-type: "📕"
+  }
+
+  details[open]>summary {
+    list-style-type: "📖"
+  }
+
+  .button-edit {
+    color: #4285f4;
+  }
+
+  .button-delete {
+    color: #db4437;
+  }
+
+
+
+  .button-edit:hover {
+    color: #00008B;
+    cursor: pointer;
+  }
+
+  .button-delete:hover {
+    color: #FF0000;
+    cursor: pointer;
+  }
+
+  tr {
+    font-size: 9px;
+    color: #001f3f;
+  }
+
+  tr:hover {
+    background-color: rgba(173, 216, 230, 0.5);
+    font-style: italic;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .zona-nutricional {
+    text-align: center;
+    background-color: #FFA07A;
+    /* Light Salmon */
+    color: #000000;
+    /* Texto negro */
+    font-style: italic;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px;
+    border: 2px solid #E9967A;
+    /* Dark Salmon */
+  }
+
+  .zona-psicosocial {
+    color: #4682B4;
+    background-color: #FFE4B5;
+    font-style: italic;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 5px;
+    border: 2px solid #8A2BE2;
+  }
+
+  .zona-informacion-etnico-negritud-discapacidad {
+    text-align: center;
+    background-color: #D3D3D3;
+    font-style: italic;
+    color: #000000;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px;
+    border: 2px solid #A9A9A9;
+  }
+
+  .zona-inactivacion {
+    text-align: center;
+    background-color: #FF0000;
+    color: #000000;
+    font-style: italic;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px;
+    border: 2px solid #FFA500;
+  }
+
+
+  .zona-inactivacion summary {
+    cursor: pointer;
+  }
+
+
+  label {
+    font-size: 12px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+  }
+</style>
