@@ -171,6 +171,7 @@ function editarUsuario(form) {
   valoresActuales[154] = form.correoJefe;
   valoresActuales[155] = form.ocupaJefe;
   valoresActuales[156] = form.acuRelacBeneJefe;
+  valoresActuales[157] = form.municipioResidenciaBene;
 
   
   // Establecer los nuevos valores en la hoja de cálculo

@@ -339,6 +339,7 @@ dataUsuarios.forEach( usuario =>{
   const correoJefeCol = tr.querySelector(".template-correoJefe");
   const ocupaJefeCol = tr.querySelector(".template-ocupaJefe");
   const acuRelacBeneJefeCol = tr.querySelector(".template-acuRelacBeneJefe");
+  const municipioResidenciaBeneCol = tr.querySelector(".template-municipioResidenciaBene");
 
 
   const editButton = tr.querySelector(".button-edit");
@@ -520,6 +521,7 @@ dataUsuarios.forEach( usuario =>{
         correoJefeCol.textContent = usuario[155];
         ocupaJefeCol.textContent = usuario[156];
         acuRelacBeneJefeCol.textContent = usuario[157];
+        municipioResidenciaBeneCol.textContent = usuario[158];
     tableBody.appendChild(tr);
 
     }) 
@@ -699,6 +701,7 @@ const epsJefe = tableRow.cells[159].innerHTML; console.log("epsJefe", epsJefe);
 const correoJefe = tableRow.cells[160].innerHTML; console.log("correoJefe", correoJefe);
 const ocupaJefe = tableRow.cells[161].innerHTML; console.log("ocupaJefe", ocupaJefe);
 const acuRelacBeneJefe = tableRow.cells[162].innerHTML; console.log("acuRelacBeneJefe", acuRelacBeneJefe);
+const municipioResidenciaBene = tableRow.cells[163].innerHTML; console.log("municipioResidenciaBene", municipioResidenciaBene);
 
 
  const crearModal = bootstrap.Modal.getOrCreateInstance("#createModal")
@@ -1184,6 +1187,10 @@ console.log("epsJefe", ocupaJefe);
 
 document.getElementById("acuRelacBeneJefe").value = acuRelacBeneJefe; 
 console.log("acuRelacBeneJefe", acuRelacBeneJefe);
+
+
+document.getElementById("municipioResidenciaBene").value = municipioResidenciaBene; 
+console.log("municipioResidenciaBene", municipioResidenciaBene);
 
 
 }

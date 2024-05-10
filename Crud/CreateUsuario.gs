@@ -159,6 +159,7 @@ function agregarUsuario(form) {
   const correoJefe = form.correoJefe;
   const ocupaJefe = form.ocupaJefe;
   const acuRelacBeneJefe = form.acuRelacBeneJefe;
+  const municipioResidenciaBene = form.municipioResidenciaBene;
 
 
   sheetsUsers.appendRow([
@@ -320,6 +321,7 @@ function agregarUsuario(form) {
     correoJefe,
     ocupaJefe,
     acuRelacBeneJefe,
+    municipioResidenciaBene,
   ]);
   return "Usuario agregado";
 }
