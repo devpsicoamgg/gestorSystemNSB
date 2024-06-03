@@ -1257,9 +1257,8 @@ document.getElementById('kindFormat').addEventListener('change', function() {
   var documentoResponsableContainer = document.getElementById('documentoResponsableContainer');
   var telefonoResponsableUdsContainer = document.getElementById('telefonoResponsableUdsContainer');
   var mesEntregaContainer = document.getElementById('mesEntregaContainer');
-  var dateDeEntregaCompletaContainer = document.getElementById('dateDeEntregaCompletaContainer');
-  var codigoAAVNContainer = document.getElementById('codigoAAVNContainer');
-
+  var fechaCreacionContainer = document.getElementById('fechaCreacionContainer');
+  
 
   docenteResponsableContainer.classList.add('hidden');
   documentoResponsableContainer.classList.add('hidden');
@@ -1269,48 +1268,54 @@ document.getElementById('kindFormat').addEventListener('change', function() {
   
 
 
-  switch (this.value) {
+  switch (kindFormat) {
     case 'DIRECTORIO':
     case 'FORMATO DIRECTORIO EXCEL':
-      docenteResponsableContainer.classList.remove('hidden');
-      mesEntregaContainer.classList.remove('hidden');
+      if (!docenteResponsable || !fechaCreacion) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente o fecha.');
+        return;
+      }
+      break;
+    case 'REFRIGERIOS':
+      if (!udsGroup || !mesEntrega) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo o mes de entrega.');
+        return;
+      }
+      break;
+    case 'COMPLEMENTOS':
+      if (!udsGroup || !fechaCreacion || !mesEntrega) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, fecha de entrega o mes de entrega.');
+        return;
+      }
       break;
     case 'FORMATO TALLA & PESO':
+      if (!udsGroup) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla o grupo.');
+        return;
+      }
+      break;
     case 'FORMATO CUENTAME':
-      docenteResponsableContainer.classList.remove('hidden');
+      if (!udsGroup || !docenteResponsable) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo o docente.');
+        return;
+      }
       break;
     case 'RAM':
     case 'FORMATO RAM EXCEL':
-      docenteResponsableContainer.classList.remove('hidden');
-      documentoResponsableContainer.classList.remove('hidden');
-      telefonoResponsableUdsContainer.classList.remove('hidden');
-      mesEntregaContainer.classList.remove('hidden');
+      if (!docenteResponsable || !documentoResponsable || !telefonoResponsableUds || !mesEntrega) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento del responsable, teléfono del responsable o mes de entrega.');
+        return;
+      }
       break;
     case 'AAVN':
     case 'FORMATO BIENESTARINA EXCEL':
-      docenteResponsableContainer.classList.remove('hidden');
-      telefonoResponsableUdsContainer.classList.remove('hidden');
-      mesEntregaContainer.classList.remove('hidden');
-      fechaCreacionContainerContainer.classList.remove('hidden');
+      if (!docenteResponsable || !telefonoResponsableUds || !mesEntrega || !fechaCreacion) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, teléfono del responsable, mes de entrega o fecha de entrega.');
+        return;
+      }
       break;
   }
-});
-
-function almacenarInformacionAdicional() {
-  const formAct = document.getElementById('crearPlanilla');
-  const udsGroup = formAct.udsGroup.value;
-  const kindFormat = formAct.kindFormat.value;
-  const docenteResponsable = formAct.docenteResponsable.value; 
-  const documentoResponsable = formAct.documentoResponsable.value;
-  const mesEntrega = formAct.mesEntrega.value;
-  const telefonoResponsableUds = formAct.telefonoResponsableUds.value;
-  const fechaCreacion = formAct.fechaCreacion.value;
-
-  if (!kindFormat && !udsGroup ) {
-    window.alert('Upsss!!! 😮😮😮😮 por favor, selecciona tipo de planilla a descargar y completa los campos.');
-    return;
-  }
-
+}
 
   google.script.run
     .withSuccessHandler(result => {
