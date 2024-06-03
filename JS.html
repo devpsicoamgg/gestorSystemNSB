@@ -1252,6 +1252,49 @@ function loadingOnOff () {
   document.querySelector('#loadingButton').classList.toggle("d-none")
 } 
 
+document.getElementById('kindFormat').addEventListener('change', function() {
+  var docenteResponsableContainer = document.getElementById('docenteResponsableContainer');
+  var documentoResponsableContainer = document.getElementById('documentoResponsableContainer');
+  var telefonoResponsableUdsContainer = document.getElementById('telefonoResponsableUdsContainer');
+  var mesEntregaContainer = document.getElementById('mesEntregaContainer');
+  var dateDeEntregaCompletaContainer = document.getElementById('dateDeEntregaCompletaContainer');
+  var codigoAAVNContainer = document.getElementById('codigoAAVNContainer');
+
+
+  docenteResponsableContainer.classList.add('hidden');
+  documentoResponsableContainer.classList.add('hidden');
+  telefonoResponsableUdsContainer.classList.add('hidden');
+  mesEntregaContainer.classList.add('hidden');
+  fechaCreacionContainer.classList.add('hidden');
+  
+
+
+  switch (this.value) {
+    case 'DIRECTORIO':
+    case 'FORMATO DIRECTORIO EXCEL':
+      docenteResponsableContainer.classList.remove('hidden');
+      mesEntregaContainer.classList.remove('hidden');
+      break;
+    case 'FORMATO TALLA & PESO':
+    case 'FORMATO CUENTAME':
+      docenteResponsableContainer.classList.remove('hidden');
+      break;
+    case 'RAM':
+    case 'FORMATO RAM EXCEL':
+      docenteResponsableContainer.classList.remove('hidden');
+      documentoResponsableContainer.classList.remove('hidden');
+      telefonoResponsableUdsContainer.classList.remove('hidden');
+      mesEntregaContainer.classList.remove('hidden');
+      break;
+    case 'AAVN':
+    case 'FORMATO BIENESTARINA EXCEL':
+      docenteResponsableContainer.classList.remove('hidden');
+      telefonoResponsableUdsContainer.classList.remove('hidden');
+      mesEntregaContainer.classList.remove('hidden');
+      fechaCreacionContainerContainer.classList.remove('hidden');
+      break;
+  }
+});
 
 function almacenarInformacionAdicional() {
   const formAct = document.getElementById('crearPlanilla');
@@ -1263,7 +1306,7 @@ function almacenarInformacionAdicional() {
   const telefonoResponsableUds = formAct.telefonoResponsableUds.value;
   const fechaCreacion = formAct.fechaCreacion.value;
 
-  if (!kindFormat && !udsGroup && !mesEntrega  && !!docenteResponsable & !!documentoResponsable &!!telefonoResponsableUds &!!fechaCreacion) {
+  if (!kindFormat && !udsGroup ) {
     window.alert('Upsss!!! 😮😮😮😮 por favor, selecciona tipo de planilla a descargar y completa los campos.');
     return;
   }
