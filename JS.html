@@ -1268,54 +1268,100 @@ document.getElementById('kindFormat').addEventListener('change', function() {
   
 
 
-  switch (kindFormat) {
+  switch (this.value) {
     case 'DIRECTORIO':
-    case 'FORMATO DIRECTORIO EXCEL':
-      if (!docenteResponsable || !fechaCreacion) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente o fecha.');
-        return;
-      }
+      docenteResponsableContainer.classList.remove('hidden');
+      fechaCreacionContainer.classList.remove('hidden');
       break;
     case 'REFRIGERIOS':
-      if (!udsGroup || !mesEntrega) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo o mes de entrega.');
-        return;
-      }
+      mesEntregaContainer.classList.remove('hidden');
       break;
     case 'COMPLEMENTOS':
-      if (!udsGroup || !fechaCreacion || !mesEntrega) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, fecha de entrega o mes de entrega.');
+      mesEntregaContainer.classList.remove('hidden');
+      fechaCreacionContainer.classList.remove('hidden');
+      break;
+    case 'FORMATO TALLA & PESO':
+      docenteResponsableContainer.classList.remove('hidden');
+      break;
+    case 'RAM':
+      docenteResponsableContainer.classList.remove('hidden');
+      documentoResponsableContainer.classList.remove('hidden');
+      telefonoResponsableUdsContainer.classList.remove('hidden');
+      mesEntregaContainer.classList.remove('hidden');
+      break;
+    case 'AAVN':
+      docenteResponsableContainer.classList.remove('hidden');
+      telefonoResponsableUdsContainer.classList.remove('hidden');
+      mesEntregaContainer.classList.remove('hidden');
+      fechaCreacionContainer.classList.remove('hidden');
+      break;
+  }
+});
+
+
+function almacenarInformacionAdicional() {
+  const formAct = document.getElementById('crearPlanilla');
+  //AAVN - respon - tel - fecha - mes 🆗
+  //DIRECTORIO - fecha y respon 🆗
+  //REFRIGERIOS - grupo - mes 
+  //COMPLEMENTOS - grupo - fecha -mes - 
+  //ACTAS - solo grupo
+  //RAM - respon - grpo - mes - tel - 
+  //FORMATO TALLA & PESO - grupo
+  //FORMATO CUENTAME - grupo y docente
+  const udsGroup = formAct.udsGroup.value;
+  const kindFormat = formAct.kindFormat.value;
+  const docenteResponsable = formAct.docenteResponsable.value; 
+  const documentoResponsable = formAct.documentoResponsable.value;
+  const mesEntrega = formAct.mesEntrega.value;
+  const telefonoResponsableUds = formAct.telefonoResponsableUds.value;
+  const fechaCreacion = formAct.fechaCreacion.value;
+
+  if (!kindFormat && !udsGroup ) {
+    window.alert('Upsss!!! 😮😮😮😮 por favor, selecciona tipo de planilla a descargar y completa los campos.');
+    return;
+  }
+
+  switch (kindFormat) {
+    case 'DIRECTORIO':
+      if (!docenteResponsable || !fechaCreacion) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente o mes.');
         return;
       }
       break;
     case 'FORMATO TALLA & PESO':
-      if (!udsGroup) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla o grupo.');
-        return;
-      }
-      break;
-    case 'FORMATO CUENTAME':
-      if (!udsGroup || !docenteResponsable) {
+      if (!docenteResponsable) {
         window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo o docente.');
         return;
       }
       break;
-    case 'RAM':
-    case 'FORMATO RAM EXCEL':
+      case 'RAM':
+      case 'FORMATO RAM EXCEL':
       if (!docenteResponsable || !documentoResponsable || !telefonoResponsableUds || !mesEntrega) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento del responsable, teléfono del responsable o mes de entrega.');
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega.');
         return;
       }
       break;
     case 'AAVN':
-    case 'FORMATO BIENESTARINA EXCEL':
-      if (!docenteResponsable || !telefonoResponsableUds || !mesEntrega || !fechaCreacion) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, teléfono del responsable, mes de entrega o fecha de entrega.');
+      if (!docenteResponsable || !telefonoResponsableUds || !mesEntrega || !dateDeEntregaCompleta || !codigoAAVN) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega, fecha de entrega y codigo del AAVN');
         return;
       }
       break;
+      case 'REFRIGERIOS':
+        if (!mesEntrega) {
+          window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega.');
+          return;
+        }
+        break;
+        case 'COMPLEMENTOS':
+          if (!mesEntrega || !fechaCreacion) {
+            window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega.');
+            return;
+          }
+          break;
   }
-}
+
 
   google.script.run
     .withSuccessHandler(result => {
