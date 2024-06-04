@@ -1318,45 +1318,45 @@ function almacenarInformacionAdicional() {
   const fechaCreacion = formAct.fechaCreacion.value;
 
   if (!kindFormat && !udsGroup ) {
-    window.alert('Upsss!!! 😮😮😮😮 por favor, selecciona tipo de planilla a descargar y completa los campos.');
+    window.alert('Upsss!!! 😮😮😮😮 por favor, selecciona grupo y tipo de planilla a descargar.');
     return;
   }
 
   switch (kindFormat) {
     case 'DIRECTORIO':
       if (!docenteResponsable || !fechaCreacion) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente o mes.');
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: responsable y fecha de creación.');
         return;
       }
       break;
     case 'FORMATO TALLA & PESO':
       if (!docenteResponsable) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo o docente.');
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Responsable.');
         return;
       }
       break;
       case 'RAM':
       case 'FORMATO RAM EXCEL':
       if (!docenteResponsable || !documentoResponsable || !telefonoResponsableUds || !mesEntrega) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega.');
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Docente, documento, telefono y mes entrega.');
         return;
       }
       break;
     case 'AAVN':
-      if (!docenteResponsable || !telefonoResponsableUds || !mesEntrega || !dateDeEntregaCompleta || !codigoAAVN) {
-        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega, fecha de entrega y codigo del AAVN');
+      if (!docenteResponsable || !telefonoResponsableUds || !mesEntrega || !dateDeEntregaCompleta) {
+        window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Docente, telefono responsable, mes entrega, fecha de entrega');
         return;
       }
       break;
       case 'REFRIGERIOS':
         if (!mesEntrega) {
-          window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega.');
+          window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Mes entrega.');
           return;
         }
         break;
         case 'COMPLEMENTOS':
           if (!mesEntrega || !fechaCreacion) {
-            window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos obligatorios: Planilla, grupo, docente, documento docente, telefono responsable y mes entrega.');
+            window.alert('Upsss!!! 😮😮😮😮 por favor, completa todos los campos: mes entrega y fecha creación.');
             return;
           }
           break;
